@@ -1,6 +1,6 @@
 # Weekly Challenge #1: Binary Search Tree
 
-https://medium.com/@jamis/weekly-programming-challenge-1-55b63b9d2a1 -- _hard mode_
+https://medium.com/@jamis/weekly-programming-challenge-1-55b63b9d2a1
 
 My (hard mode) submission is an implementation of an AVL Tree--a kind
 of self-balancing binary search tree.
