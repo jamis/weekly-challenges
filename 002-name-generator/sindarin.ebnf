@@ -1,0 +1,25 @@
+name = ( prefix , syllable , { syllable } , [ final ] )
+     | ( syllable , syllable , { syllable }, [ final ] );
+
+prefix = syllable , ( ' ' | '-' ) ;
+
+syllable = 'ab' | 'ael' | 'al' | 'am' | 'ar' | 'arg' |
+           'bal' | 'bar' | 'bel' | 'bor' |
+           'ca' | 'cal' | 'car' | 'cel' | 'cír' |
+           'dam' | 'dim' | 'dor' | 'dún' |
+           'ed' | 'eg' | 'el' | 'em' | 'en' | 'er' |
+           'fae' | 'fa' | 'far' | 'fin' | 'fir' |
+           'gal' | 'glam' | 'gol' |
+           'hal' | 'har' | 'hur' |
+           'ia' | 'im' | 'in' |
+           'la' | 'lam' | 'lan' | 'lo' | 'lor' |
+           'ma' | 'mal' | 'men' | 'mer' | 'min' | 'mir' | 'mor' |
+           'nan' | 'nar' | 'nen' | 'ni' | 'no' | 'nur' |
+           'on' | 'or' | 'os' |
+           'par' | 'pel' | 'pin' |
+           'ra' | 'ram' | 'ri' | 'ro' |
+           'sa' | 'sir' |
+           'ta' | 'taur' | 'tin' | 'tol' | 'tor' |
+           'uil' | 'ul' ;
+
+final = 'ath' | 'ryn' | 'ond' | 'dhrim' | 'thil' | 'viel' ;

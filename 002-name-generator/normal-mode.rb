@@ -19,7 +19,7 @@
 #            'ra' | 'ram' | 'ri' | 'ro' |
 #            'sa' | 'sir' |
 #            'ta' | 'taur' | 'tin' | 'tol' | 'tor' |
-#            'uil' | 'ul' ).sample
+#            'uil' | 'ul'
 #
 # final = 'ath' | 'ryn' | 'ond' | 'dhrim' | 'thil' | 'viel'
 
