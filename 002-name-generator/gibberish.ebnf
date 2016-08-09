@@ -1,0 +1,33 @@
+paragraph = sentence , punctuation , { ' ' , sentence , punctuation } ;
+
+punctuation = '.' | '.' | '.' | '!' | '?' ;
+
+sentence = ( combined , ' ' , verb )
+         | ( combined , ' ' , verb , ' ' , combined ) ;
+
+subject = noun
+        | ( article , ' ' , noun )
+        | ( adjective , ' ' , noun )
+        | ( article , ' ' , adjective , ' ' , noun ) ;
+
+combined = subject
+         | ( subject , ' and ' , subject )
+         | ( subject , ' or ' , subject ) ;
+
+object = subject ;
+
+noun = person | place | thing ;
+
+person = 'Obama' | 'Trump' | 'Clinton' ;
+
+place = 'Nebraska' | 'Mars' | 'bathroom' | 'school' | 'gym' | 'Tokyo' ;
+
+thing = 'table' | 'computer' | 'food' ;
+
+article = 'the' ;
+
+adjective = 'pretty' | 'crooked' | 'happy' | 'silly' | 'hungry'
+          | 'angry' | 'ticklish' ;
+
+verb = 'eats' | 'watches' | 'punches' | 'orbits' | 'considers'
+     | 'drops' | 'squeezes' | 'launches';
