@@ -300,13 +300,59 @@ module EBNF
   end
 end
 
-file_name = ARGV.first or abort "please specify an EBNF file"
-contents = File.read(file_name)
+if ENV["TEST"]
+  require 'minitest/autorun'
 
-scanner = EBNF::Scanner.new(contents)
-parser = EBNF::Parser.new(scanner)
-grammar = parser.parse
+  class ScannerTest < Minitest::Test
+    def test_recognizes_alphanumeric_ids
+      scanner = EBNF::Scanner.new("hello_123")
+      token = scanner.shift
+      assert_equal :id, token[0]
+      assert_equal "hello_123", token[1]
+    end
 
-10.times do |n|
-  puts "%2d. %s" % [ n+1, grammar.generate ]
+    def test_recognizes_ids_with_spaces
+      scanner = EBNF::Scanner.new("hello world ")
+      token = scanner.shift
+      assert_equal :id, token[0]
+      assert_equal "hello world", token[1]
+    end
+
+    def test_parse_single_quote_string
+      scanner = EBNF::Scanner.new("'hello world'")
+      token = scanner.shift
+      assert_equal :terminal, token[0]
+      assert_equal "hello world", token[1]
+    end
+
+    def test_parse_double_quote_string
+      scanner = EBNF::Scanner.new('"hello world"')
+      token = scanner.shift
+      assert_equal :terminal, token[0]
+      assert_equal "hello world", token[1]
+    end
+
+    def test_parse_punctuation
+      EBNF::Scanner::PUNCT.each do |key, token_type|
+        scanner = EBNF::Scanner.new("#{key}")
+        token = scanner.shift
+        assert_equal token_type, token[0]
+      end
+    end
+  end
+
+  class ParserTest < Minitest::Test
+  end
+
+else
+  file_name = ARGV.first or abort "please specify an EBNF file"
+  contents = File.read(file_name)
+
+  scanner = EBNF::Scanner.new(contents)
+  parser = EBNF::Parser.new(scanner)
+  grammar = parser.parse
+
+  10.times do |n|
+    puts "%2d. %s" % [ n+1, grammar.generate ]
+  end
 end
