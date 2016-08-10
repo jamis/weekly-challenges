@@ -2,17 +2,14 @@ paragraph = sentence , punctuation , { ' ' , sentence , punctuation } ;
 
 punctuation = '.' | '.' | '.' | '!' | '?' ;
 
-sentence = ( combined , ' ' , verb )
-         | ( combined , ' ' , verb , ' ' , combined ) ;
+sentence = combined , ' ' , verb , [ ' ' , combined ] ;
 
 subject = noun
         | ( article , ' ' , noun )
         | ( adjective , ' ' , noun )
         | ( article , ' ' , adjective , ' ' , noun ) ;
 
-combined = subject
-         | ( subject , ' and ' , subject )
-         | ( subject , ' or ' , subject ) ;
+combined = subject , [ ( ' and ' | ' or ' ) , subject ] ;
 
 object = subject ;
 
