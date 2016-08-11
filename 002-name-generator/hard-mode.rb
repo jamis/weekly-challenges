@@ -72,7 +72,27 @@ module EBNF
 
     def _scan_terminal
       quote = @scanner.scan(/['"]/)
-      content = @scanner.scan(/[^#{quote}]*/)
+      if quote == "'"
+        content = @scanner.scan(/[^#{quote}]*/)
+      else
+        content = ""
+        loop do
+          chunk = @scanner.scan(/[^\\#{quote}]/)
+
+          if chunk
+            content << chunk
+          elsif @scanner.scan(/\\/)
+            escaped = @scanner.getch
+            content << case escaped
+              when "n" then "\n"
+              else escaped
+            end
+          else
+            break
+          end
+        end
+      end
+
       @scanner.scan(/#{quote}/) or raise Error, "unterminated string"
       content
     end
@@ -330,6 +350,20 @@ if ENV["TEST"]
       token = scanner.shift
       assert_equal :terminal, token[0]
       assert_equal "hello world", token[1]
+    end
+
+    def test_parse_escapes_in_double_quoted_string
+      scanner = EBNF::Scanner.new('"hello\\\\\n"')
+      token = scanner.shift
+      assert_equal :terminal, token[0]
+      assert_equal "hello\\\n", token[1]
+    end
+
+    def test_ignore_escape_in_single_quoted_string
+      scanner = EBNF::Scanner.new("'hello\\\\n'")
+      token = scanner.shift
+      assert_equal :terminal, token[0]
+      assert_equal 'hello\\\n', token[1]
     end
 
     def test_parse_punctuation
