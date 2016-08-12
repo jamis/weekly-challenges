@@ -2,24 +2,28 @@ require 'strscan'
 
 #  ebnf = { rule } ;
 #  rule = identifier , '=' , definition , ';' ;
-#  identifier = letter , { word | ' ' } ;
+#  identifier = letter , { word } ;
 #  letter = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i'
 #         | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r'
 #         | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'
 #         | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I'
 #         | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R'
 #         | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' ;
-#  word = letter
-#       | '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
-#       | '_' | ' ' ;
+#  digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
+#  number = digit, { digit } ;
+#  word = letter | digit | '_' | ' ' ;
 #  definition = alternation ;
 #  alternation = concatenation, { '|', definition } ;
-#  concatenation = atom, { ',', definition } ;
+#  concatenation = atom, { modifier }, { ',', definition } ;
 #  atom = '[', definition, ']'
 #       | '(', definition, ')'
 #       | '{', definition, '}'
 #       | identifier
 #       | terminal ;
+#  modifier = '/', number
+#           | '<', number
+#           | '>', number
+#           | '%', number ;
 
 module EBNF
   class Error < RuntimeError; end
@@ -42,7 +46,11 @@ module EBNF
       '{' => :start_repeat,
       '}' => :end_repeat,
       '|' => :alternator,
-      ',' => :concatenator
+      ',' => :concatenator,
+      '/' => :weight,
+      '<' => :maximum,
+      '>' => :minimum,
+      '%' => :probability
     }
 
     def shift
@@ -56,9 +64,11 @@ module EBNF
 
       if (id = @scanner.scan(/[a-z][a-z0-9_ ]*/i))
         [ :id, id.strip, pos, at ]
+      elsif (num = @scanner.scan(/[0-9]+/))
+        [ :number, num.to_i, pos, at ]
       elsif @scanner.match?(/['"]/)
         [ :terminal, _scan_terminal, pos, at ]
-      elsif (char = @scanner.scan(/[=;\[\](){}|,]/))
+      elsif (char = @scanner.scan(/[=;\[\](){}|,\/<>%]/))
         type = PUNCT[char] or raise Error, "unknown punctuation #{char}"
         [ type, char, pos, at ]
       else
@@ -147,7 +157,7 @@ module EBNF
     def _parse_alternation
       left = _parse_concatenation
 
-      if _peek.first == :alternator
+      if _match? :alternator
         _next
         right = _parse_definition
 
@@ -166,7 +176,7 @@ module EBNF
     def _parse_concatenation
       left = _parse_atom
 
-      if _peek.first == :concatenator
+      if _match? :concatenator
         _next
         right = _parse_definition
 
@@ -185,20 +195,38 @@ module EBNF
     def _parse_atom
       tok = _next
 
-      case tok.first
-      when :id then Nonterminal.new(tok[1])
-      when :terminal then Terminal.new(tok[1])
-      when :start_optional then _parse_optional
-      when :start_group then _parse_group
-      when :start_repeat then _parse_repeat
-      else raise UnexpectedToken, "expected id|terminal, got #{tok.inspect}"
+      atom = case tok.first
+        when :id then Nonterminal.new(tok[1])
+        when :terminal then Terminal.new(tok[1])
+        when :start_optional then _parse_optional
+        when :start_group then _parse_group
+        when :start_repeat then _parse_repeat
+        else raise UnexpectedToken, "expected id|terminal, got #{tok.inspect}"
+      end
+
+      _parse_modifiers(atom)
+
+      atom
+    end
+
+    def _parse_modifiers(atom)
+      while _match?( %i( weight minimum maximum probability ) )
+        modifier = _next
+        value = _expect :number
+
+        case modifier.first
+        when :weight then atom.weight = value[1]
+        when :minimum then atom.minimum = value[1]
+        when :maximum then atom.maximum = value[1]
+        when :probability then atom.probability = value[1]
+        end
       end
     end
 
     def _expect(types)
       types = [ types ] unless Array === types
-      tok = @tokens.shift
-      return tok if types.include?(tok.first)
+      tok = _next
+      return tok if tok && types.include?(tok.first)
       raise UnexpectedToken, "got #{tok.inspect} instead of #{types.inspect}"
     end
 
@@ -210,6 +238,12 @@ module EBNF
       @tokens.shift.tap do |tok|
         @tokens.unshift(tok)
       end
+    end
+
+    def _match?(types)
+      types = [ types ] unless Array === types
+      tok = _peek
+      tok && types.include?(tok.first)
     end
   end
 
@@ -243,7 +277,8 @@ module EBNF
         when Terminal then term.content
         when Nonterminal then _expand(self[term.content])
         when Optional then
-          if rand(100) < 50
+          probability = term.probability || 50
+          if rand(100) < probability
             _expand(term.definition)
           else
             ""
@@ -252,17 +287,53 @@ module EBNF
           _expand(term.definition)
         when Repeat then
           s = ""
+          count = 0
+
+          minimum = term.minimum || -1
+          maximum = term.maximum || 1_000_000
+          probability = term.probability || 50
+
           loop do
-            break if rand(100) < 50
+            break if (count > minimum && rand(100) >= probability) || count+1 >= maximum
             s << _expand(term.definition)
+            count += 1
           end
           s
         when Concatenation then
           term.options.map { |item| _expand(item) }.join
         when Alternation then
-          _expand(term.options.sample)
+          _expand(_weighted_sample(term.options))
         else
           raise Error, "not sure what to make of #{term.inspect}"
+      end
+    end
+
+    def _weighted_sample(list)
+      total = list.inject(0) { |sum, item| sum + (item.weight || 1) }
+      target = 1 + rand(total)
+      n = 0
+
+      list.each do |item|
+        n += item.weight || 1
+        return item if n >= target
+      end
+
+      nil
+    end
+  end
+
+  module Modifiable
+    attr_accessor :minimum
+    attr_accessor :maximum
+    attr_accessor :weight
+    attr_accessor :probability
+
+    def modifiers
+      "".tap do |s|
+        s << "%#{probability}" if probability.to_i > 0
+        s << "/#{weight}" if weight.to_i > 0
+        s << ">#{minimum}" if minimum.to_i > 0
+        s << "<#{maximum}" if maximum.to_i > 0
       end
     end
   end
@@ -274,6 +345,8 @@ module EBNF
   end
 
   class Terminal < Struct.new(:content)
+    include Modifiable
+
     def to_s
       if content.include?("'")
         '"' + content + '"'
@@ -284,24 +357,32 @@ module EBNF
   end
 
   class Nonterminal < Struct.new(:content)
+    include Modifiable
+
     def to_s
       content
     end
   end
 
   class Optional < Struct.new(:definition)
+    include Modifiable
+
     def to_s
       "[ #{definition} ]"
     end
   end
 
   class Group < Struct.new(:definition)
+    include Modifiable
+
     def to_s
       "( #{definition} )"
     end
   end
 
   class Repeat < Struct.new(:definition)
+    include Modifiable
+
     def to_s
       "{ #{definition} }"
     end
@@ -336,6 +417,13 @@ if ENV["TEST"]
       token = scanner.shift
       assert_equal :id, token[0]
       assert_equal "hello world", token[1]
+    end
+
+    def test_recognizes_numbers
+      scanner = EBNF::Scanner.new("123")
+      token = scanner.shift
+      assert_equal :number, token[0]
+      assert_equal 123, token[1]
     end
 
     def test_parse_single_quote_string

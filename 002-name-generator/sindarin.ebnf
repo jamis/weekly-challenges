@@ -1,5 +1,5 @@
-name = ( prefix , syllable , { syllable } , [ final ] )
-     | ( syllable , syllable , { syllable }, [ final ] );
+name = ( prefix , syllable , { syllable }<3 , final )
+     | ( syllable , { syllable }<4, final );
 
 prefix = syllable , ( ' ' | '-' ) ;
 

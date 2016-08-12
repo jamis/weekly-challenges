@@ -1,24 +1,19 @@
-expression = '(' , id , optional arguments , ')' ;
+expression = '(' , id , { ' ' , argument }%75<4 , ')' ;
 
-word = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i'
-     | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r'
-     | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' ;
+word = 'a'/3 | 'b' | 'c' | 'd' | 'e'/3 | 'f' | 'g' | 'h' | 'i'/3
+     | 'j' | 'k' | 'l' | 'm' | 'n' | 'o'/3 | 'p' | 'q' | 'r'
+     | 's'/7 | 't' | 'u'/3 | 'v' | 'w' | 'x' | 'y' | 'z' ;
 
 digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 
-any letter = word | digit | ' ' ;
+any letter = word/10 | digit/5 | ' '/2 ;
 
-id = word , { word } ;
-
-optional arguments = ''
-                   | ( ' ' , arguments ) ;
-
-arguments = argument , optional arguments ;
+id = { word }>0<6 ;
 
 argument = string
          | number
          | expression ;
 
-string = '"' , { any letter } , '"' ;
+string = '"' , { any letter }>0 , '"' ;
 
-number = digit , { digit } , [ '.' , digit , { digit } ] ;
+number = { digit }>0 , [ '.' , { digit }>0 ] ;

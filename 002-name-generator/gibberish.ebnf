@@ -1,6 +1,6 @@
 paragraph = sentence , punctuation , { ' ' , sentence , punctuation } ;
 
-punctuation = '.' | '.' | '.' | '!' | '?' ;
+punctuation = '.'/10 | '!' | '?' ;
 
 sentence = combined , ' ' , verb , [ ' ' , combined ] ;
 
