@@ -164,7 +164,7 @@ module EBNF
         if Alternation === right
           right = right.options
         else
-          right = [ right ]
+          right = [ Group.new(right) ]
         end
 
         Alternation.new([left, *right])
