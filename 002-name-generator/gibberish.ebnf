@@ -5,9 +5,9 @@ punctuation = '.'/10 | '!' | '?' ;
 sentence = combined , ' ' , verb , [ ' ' , combined ] ;
 
 subject = noun
-        | ( article , ' ' , noun )
-        | ( adjective , ' ' , noun )
-        | ( article , ' ' , adjective , ' ' , noun ) ;
+        | article , ' ' , noun
+        | adjective , ' ' , noun
+        | article , ' ' , adjective , ' ' , noun ;
 
 combined = subject , [ ( ' and ' | ' or ' ) , subject ] ;
 

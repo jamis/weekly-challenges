@@ -11,9 +11,9 @@ digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 word = letter/10 | digit/5 | '_' | ' ' ;
 alternation = concatenation, { ' | ', alternation }%25 ;
 concatenation = atom, { ' , ', concatenation }%25 ;
-atom = ( '[ ', alternation, ' ]' )
-     | ( '( ', alternation, ' )' )
-     | ( '{ ', alternation, ' }' )
+atom = '[ ', alternation, ' ]'
+     | '( ', alternation, ' )'
+     | '{ ', alternation, ' }'
      | identifier/5
      | terminal/20 ;
 terminal = "'" , { word }>0<5 , "'" ;

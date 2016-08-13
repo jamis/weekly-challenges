@@ -13,8 +13,8 @@ require 'strscan'
 #  number = digit, { digit } ;
 #  word = letter | digit | '_' | ' ' ;
 #  definition = alternation ;
-#  alternation = concatenation, { '|', definition } ;
-#  concatenation = atom, { modifier }, { ',', definition } ;
+#  alternation = concatenation, { '|', alternation } ;
+#  concatenation = atom, { modifier }, { ',', concatenation } ;
 #  atom = '[', definition, ']'
 #       | '(', definition, ')'
 #       | '{', definition, '}'
@@ -159,12 +159,12 @@ module EBNF
 
       if _match? :alternator
         _next
-        right = _parse_definition
+        right = _parse_alternation
 
         if Alternation === right
           right = right.options
         else
-          right = [ Group.new(right) ]
+          right = [ right ]
         end
 
         Alternation.new([left, *right])
@@ -178,7 +178,7 @@ module EBNF
 
       if _match? :concatenator
         _next
-        right = _parse_definition
+        right = _parse_concatenation
 
         if Concatenation === right
           right = right.options
@@ -389,12 +389,16 @@ module EBNF
   end
 
   class Concatenation < Struct.new(:options)
+    include Modifiable
+
     def to_s
       options.map { |o| o.to_s }.join(" , ")
     end
   end
 
   class Alternation < Struct.new(:options)
+    include Modifiable
+
     def to_s
       options.map { |o| o.to_s }.join(" | ")
     end
