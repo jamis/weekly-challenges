@@ -8,7 +8,8 @@ much the better!
 
 The challenges are:
 
-1. Binary Search Tree -- https://medium.com/@jamis/weekly-programming-challenge-1-55b63b9d2a1 -- _hard mode_
+1. Binary Search Tree -- https://medium.com/@jamis/weekly-programming-challenge-1-55b63b9d2a1
+2. Grammar-Based Name Generation -- https://medium.com/@jamis/weekly-programming-challenge-2-33ef134b39cd
 
 
 ## LICENSE
