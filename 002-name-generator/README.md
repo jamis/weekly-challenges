@@ -25,10 +25,10 @@ of the generator by specifying probabilities for optional items, minimum
 and maximum counts for repeats, and weights for items in an alternation:
 
 ```bnf
-start = first/5 | second/2 | third
-first = { 'a' }>0<5
-second = 'b' , [ 'c' ]%25
-third = 'd' | ( first , 'b' )/3 | { 'g' }>2%25
+start = first/5 | second/2 | third ;
+first = { 'a' }>0<5 ;
+second = 'b' , [ 'c' ]%25 ;
+third = 'd' | ( first , 'b' )/3 | { 'g' }>2%25 ;
 ```
 
 The slash `/` assigns a weight to the element. For `start`, then, the total
