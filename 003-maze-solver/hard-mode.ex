@@ -102,25 +102,35 @@ defmodule Grid do
 
 end
 
-grid = Grid.from_file "input/maze-normal-010.txt"
-path = Grid.find_path(grid)
+defmodule ProgrammingChallenge3 do
+  def main(args) when length(args) != 1 do
+    IO.puts "You must specify a file containing a maze to solve"
+  end
 
-%{ dirs: directions } = Enum.reduce(tl(path), %{ prev: hd(path), dirs: [] },
-      fn(cell, acc) ->
-        %{ prev: prev, dirs: dirs } = acc
+  def main([ filename ]) do
+    grid = Grid.from_file(filename)
+    path = Grid.find_path(grid)
 
-        { row, col } = cell
-        { prow, pcol } = prev
+    %{ dirs: directions } = Enum.reduce(tl(path), %{ prev: hd(path), dirs: [] },
+          fn(cell, acc) ->
+            %{ prev: prev, dirs: dirs } = acc
 
-        dir = cond do
-          row - prow < 0 -> "north"
-          row - prow > 0 -> "south"
-          col - pcol < 0 -> "west"
-          col - pcol > 0 -> "east"
-        end
+            { row, col } = cell
+            { prow, pcol } = prev
 
-        %{ prev: cell, dirs: [ dir | dirs ] }
-      end)
+            dir = cond do
+              row - prow < 0 -> "north"
+              row - prow > 0 -> "south"
+              col - pcol < 0 -> "west"
+              col - pcol > 0 -> "east"
+            end
 
-IO.puts(directions |> Enum.reverse |> Enum.join("\n"))
-IO.puts "#{length(directions)} steps"
+            %{ prev: cell, dirs: [ dir | dirs ] }
+          end)
+
+    IO.puts(directions |> Enum.reverse |> Enum.join("\n"))
+    IO.puts "#{length(directions)} steps"
+  end
+end
+
+ProgrammingChallenge3.main(System.argv)
