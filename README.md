@@ -10,6 +10,7 @@ The challenges are:
 
 1. Binary Search Tree -- https://medium.com/@jamis/weekly-programming-challenge-1-55b63b9d2a1
 2. Grammar-Based Name Generation -- https://medium.com/@jamis/weekly-programming-challenge-2-33ef134b39cd
+3. Solving Mazes -- https://medium.com/@jamis/weekly-programming-challenge-3-932b16ddd957
 
 
 ## LICENSE
