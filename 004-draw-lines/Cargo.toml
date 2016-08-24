@@ -1,0 +1,7 @@
+[package]
+name = "draw-lines"
+version = "0.1.0"
+authors = ["Jamis Buck <jamis@jamisbuck.org>"]
+
+[dependencies]
+rand = "0.3"
