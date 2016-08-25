@@ -8,7 +8,7 @@ fn main() {
   let mut image = image::Image::new(503, 503, 0xffffff);
   let (width, height) = image.dimensions();
 
-  let line_width = |p: isize, length: isize| 6 as isize;
+  let line_width = |_, _| 6;
 
   let mut x = 1;
   while x < width-1 {
