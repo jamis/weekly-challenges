@@ -40,32 +40,22 @@ impl Image {
     }
   }
 
-  fn preferred_grade((x1, y1): (usize, usize), (x2, y2): (usize, usize)) -> (bool, (usize, usize), (usize, usize))
-  {
-    let dx = x2 as isize - x1 as isize;
-    let dy = y2 as isize - y1 as isize;
-    let steep = dy.abs() > dx.abs();
-
-    if steep {
-      (true, (y1, x1), (y2, x2))
-    } else {
-      (false, (x1, y1), (x2, y2))
-    }
-  }
-
-  fn ascending_order((x1, y1): (usize, usize), (x2, y2): (usize, usize)) -> ((usize, usize), (usize, usize))
-  {
-    if x1 > x2 {
-      ((x2, y2), (x1, y1))
-    } else {
-      ((x1, y1), (x2, y2))
-    }
-  }
-
   fn normalize_coordinates(p1: (usize, usize), p2: (usize, usize)) -> (bool, (usize, usize), (usize, usize))
   {
-    let (steep, p1, p2) = Image::preferred_grade(p1, p2);
-    let (p1, p2) = Image::ascending_order(p1, p2);
+    let (steep, p1, p2) = {
+      let dx = p2.0 as isize - p1.0 as isize;
+      let dy = p2.1 as isize - p1.1 as isize;
+      let steep = dy.abs() > dx.abs();
+
+      if steep {
+        (true, (p1.1, p1.0), (p2.1, p2.0))
+      } else {
+        (false, p1, p2)
+      }
+    };
+
+    let (p1, p2) = if p1.0 > p2.0 { (p2, p1) } else { (p1, p2) };
+
     (steep, p1, p2)
   }
 
