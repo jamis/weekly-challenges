@@ -93,14 +93,35 @@ impl Image {
     }
   }
 
+  pub fn draw_thick_line(&mut self,
+                         p1: (usize, usize),
+                         p2: (usize, usize),
+                         color: u32,
+                         thickness: usize)
+  {
+    let line_width = |_, _| thickness as isize;
+    self.draw_thick_line_with_function(p1, p2, color, &line_width);
+  }
+
+  pub fn draw_thick_line_with_function<F>(&mut self,
+                                          p1: (usize, usize),
+                                          p2: (usize, usize),
+                                          color: u32,
+                                          width: F)
+    where F: Fn(isize, isize) -> isize
+  {
+    self.draw_thick_line_with_functions(p1, p2, color, &width, &width);
+  }
+
+
   // adapted from the discussion and code presented here:
   // http://kt8216.unixcab.org/murphy/index.html
-  pub fn draw_thick_line<F>(&mut self,
-                            p1: (usize, usize),
-                            p2: (usize, usize),
-                            color: u32,
-                            left_width: F,
-                            right_width: F)
+  pub fn draw_thick_line_with_functions<F>(&mut self,
+                                           p1: (usize, usize),
+                                           p2: (usize, usize),
+                                           color: u32,
+                                           left_width: F,
+                                           right_width: F)
     where F: Fn(isize, isize) -> isize
   {
     let (dx, xstep) = if p1.0 > p2.0 {

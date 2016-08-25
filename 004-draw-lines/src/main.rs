@@ -8,8 +8,6 @@ fn main() {
   let mut image = image::Image::new(503, 503, 0xffffff);
   let (width, height) = image.dimensions();
 
-  let line_width = |_, _| 6;
-
   let mut x = 1;
   while x < width-1 {
     //let color = rand::random::<u32>();
@@ -23,10 +21,10 @@ fn main() {
     //image.draw_line((width-x,height-2), (1,width-x), color);
     //image.draw_line((1,width-x), (x,1), color);
 
-    image.draw_thick_line((x,1), (width-2,x), color, &line_width, &line_width);
-    image.draw_thick_line((width-2,x), (width-x,height-2), color, &line_width, &line_width);
-    image.draw_thick_line((width-x,height-2), (1,width-x), color, &line_width, &line_width);
-    image.draw_thick_line((1,width-x), (x,1), color, &line_width, &line_width);
+    image.draw_thick_line((x,1), (width-2,x), color, 6);
+    image.draw_thick_line((width-2,x), (width-x,height-2), color, 6);
+    image.draw_thick_line((width-x,height-2), (1,width-x), color, 6);
+    image.draw_thick_line((1,width-x), (x,1), color, 6);
 
     x += 10;
   }
