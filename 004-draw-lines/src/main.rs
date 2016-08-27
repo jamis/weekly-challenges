@@ -32,6 +32,15 @@ fn main() {
     x += 10;
   }
 
+  // dotted line
+  let dotted = image::LineOptions::default().with_color(0xff0000).with_dash(1);
+  image.draw_line((50,200), (450,200), &dotted);
+  image.draw_line((50,210), (450,210), &dotted.with_width(3));
+
+  let dashed = image::LineOptions::default().with_color(0x0000ff).with_dash(5);
+  image.draw_line((50,300), (450,300), &dashed);
+  image.draw_line((50,310), (450,310), &dashed.with_width(3));
+
   match File::create("lines.ppm") {
     Err(why) => println!("couldn't create lines.ppm ({})", why.description()),
     Ok(file) => image.to_ppm(file)

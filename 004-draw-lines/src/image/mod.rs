@@ -13,12 +13,14 @@ type LineWidthFn = Fn(isize, isize) -> isize;
 pub struct LineOptions {
   pub color: u32,
   pub width: usize,
+  pub dash: usize,
 }
 
 impl LineOptions {
   pub fn default() -> Self {
     LineOptions { color: 0x000000,
-                  width: 1 }
+                  width: 1,
+                  dash: 0 }
   }
 
   pub fn with_color(&self, color: u32) -> Self {
@@ -27,6 +29,11 @@ impl LineOptions {
 
   pub fn with_width(&self, width: usize) -> Self {
     LineOptions { width: width,
+                  .. *self }
+  }
+
+  pub fn with_dash(&self, dash: usize) -> Self {
+    LineOptions { dash: dash,
                   .. *self }
   }
 }
@@ -118,6 +125,7 @@ impl Image {
     let right_width: Box<LineWidthFn> = Box::new(move |_,_| width as isize);
 
     let color = options.color;
+    let dash = options.dash;
 
     let (dx, xstep) = if p1.0 > p2.0 {
         (p1.0 as isize - p2.0 as isize, -1)
@@ -162,20 +170,29 @@ impl Image {
     let mut x = p1.0 as isize;
     let mut y = p1.1 as isize;
 
+    let mut pen_down = true;
+    let mut dash_step = 0;
+
     for p in 0..length {
       let w_left = ((left_fn(p, length) * 2) as f64 * d) as isize;
       let w_right = ((right_fn(p, length) * 2) as f64 * d) as isize;
-      self.perpendicular((x, y), color, dx, dy, pxstep, pystep,
-                           p_error, w_left, w_right, error);
+
+      if pen_down {
+        self.perpendicular((x, y), color, dx, dy, pxstep, pystep,
+                             p_error, w_left, w_right, error);
+      }
 
       if error >= threshold {
         if swapped { x += xstep } else { y += ystep }
         error += e_diag;
 
         if p_error >= threshold {
-          self.perpendicular((x, y), color, dx, dy, pxstep, pystep,
-                               (p_error+e_diag+e_square),
-                               w_left, w_right, error);
+          if pen_down {
+            self.perpendicular((x, y), color, dx, dy, pxstep, pystep,
+                                 (p_error+e_diag+e_square),
+                                 w_left, w_right, error);
+          }
+
           p_error += e_diag;
         }
 
@@ -184,6 +201,14 @@ impl Image {
 
       error += e_square;
       if swapped { y += ystep } else { x += xstep };
+
+      if dash > 0 {
+        dash_step += 1;
+        if dash_step >= dash {
+          pen_down = !pen_down;
+          dash_step = 0;
+        }
+      }
     }
   }
 
