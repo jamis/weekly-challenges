@@ -8,8 +8,31 @@ pub struct Image {
   pixels: Vec<u32>,
 }
 
+type LineWidthFn = Fn(isize, isize) -> isize;
+
+pub struct LineOptions {
+  pub color: u32,
+  pub width: usize,
+}
+
+impl LineOptions {
+  pub fn default() -> Self {
+    LineOptions { color: 0x000000,
+                  width: 1 }
+  }
+
+  pub fn with_color(&self, color: u32) -> Self {
+    LineOptions { color: color, .. *self }
+  }
+
+  pub fn with_width(&self, width: usize) -> Self {
+    LineOptions { width: width,
+                  .. *self }
+  }
+}
+
 impl Image {
-  pub fn new(width: usize, height: usize, background: u32) -> Image
+  pub fn new(width: usize, height: usize, background: u32) -> Self
   {
     let size = width * height;
     let pixels = vec![background; size];
@@ -59,7 +82,7 @@ impl Image {
     (steep, p1, p2)
   }
 
-  pub fn draw_line(&mut self, p1: (usize, usize), p2: (usize, usize), color: u32)
+  pub fn draw_line_bresenham(&mut self, p1: (usize, usize), p2: (usize, usize), color: u32)
   {
     let (steep, (x1, y1), (x2, y2)) = Image::normalize_coordinates(p1, p2);
     let dx = x2 as isize - x1 as isize;
@@ -83,37 +106,19 @@ impl Image {
     }
   }
 
-  pub fn draw_thick_line(&mut self,
-                         p1: (usize, usize),
-                         p2: (usize, usize),
-                         color: u32,
-                         thickness: usize)
-  {
-    let line_width = |_, _| thickness as isize;
-    self.draw_thick_line_with_function(p1, p2, color, &line_width);
-  }
-
-  pub fn draw_thick_line_with_function<F>(&mut self,
-                                          p1: (usize, usize),
-                                          p2: (usize, usize),
-                                          color: u32,
-                                          width: F)
-    where F: Fn(isize, isize) -> isize
-  {
-    self.draw_thick_line_with_functions(p1, p2, color, &width, &width);
-  }
-
-
   // adapted from the discussion and code presented here:
   // http://kt8216.unixcab.org/murphy/index.html
-  pub fn draw_thick_line_with_functions<F>(&mut self,
-                                           p1: (usize, usize),
-                                           p2: (usize, usize),
-                                           color: u32,
-                                           left_width: F,
-                                           right_width: F)
-    where F: Fn(isize, isize) -> isize
+  pub fn draw_line(&mut self,
+                   p1: (usize, usize),
+                   p2: (usize, usize),
+                   options: &LineOptions)
   {
+    let width = options.width;
+    let left_width: Box<LineWidthFn> = Box::new(move |_,_| width as isize);
+    let right_width: Box<LineWidthFn> = Box::new(move |_,_| width as isize);
+
+    let color = options.color;
+
     let (dx, xstep) = if p1.0 > p2.0 {
         (p1.0 as isize - p2.0 as isize, -1)
       } else if p1.0 == p2.0 {
@@ -132,16 +137,16 @@ impl Image {
 
     // compute the perpendicular x/y steps
     let (pystep, pxstep, left_fn, right_fn) = match (xstep, ystep) {
-      (-1, -1) => (-1,  1, right_width, left_width),
-      (-1,  0) => (-1,  0, right_width, left_width),
-      (-1,  1) => ( 1,  1, left_width,  right_width),
-      ( 0, -1) => ( 0, -1, left_width,  right_width),
-      ( 0,  0) => ( 0,  0, left_width,  right_width),
-      ( 0,  1) => ( 0,  1, left_width,  right_width),
-      ( 1, -1) => (-1, -1, left_width,  right_width),
-      ( 1,  0) => (-1,  0, left_width,  right_width),
-      ( 1,  1) => ( 1, -1, right_width, left_width),
-      _        => ( 9,  9, left_width,  right_width),
+      (-1, -1) => (-1,  1, &right_width, &left_width),
+      (-1,  0) => (-1,  0, &right_width, &left_width),
+      (-1,  1) => ( 1,  1, &left_width,  &right_width),
+      ( 0, -1) => ( 0, -1, &left_width,  &right_width),
+      ( 0,  0) => ( 0,  0, &left_width,  &right_width),
+      ( 0,  1) => ( 0,  1, &left_width,  &right_width),
+      ( 1, -1) => (-1, -1, &left_width,  &right_width),
+      ( 1,  0) => (-1,  0, &left_width,  &right_width),
+      ( 1,  1) => ( 1, -1, &right_width, &left_width),
+      _        => ( 9,  9, &left_width,  &right_width),
     };
 
     let swapped = dy >= dx;
