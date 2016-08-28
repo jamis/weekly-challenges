@@ -3,18 +3,34 @@ package main
 import (
   "fmt"
   "math/rand"
+  "time"
   "jamis/week5/binary_heap"
 )
 
-func compareInt(a int, b int) bool {
+func maxHeap(a int, b int) bool {
   return a > b
 }
 
-func main() {
-  heap := binary_heap.NewHeap(compareInt)
+func minHeap(a int, b int) bool {
+  return a < b
+}
 
-  for i := 0; i < 100; i++ {
-    heap.Insert("a", rand.Intn(1000))
+func minHeapPreferEven(a int, b int) bool {
+  if a % 2 == b % 2 {
+    return a < b
+  } else if a % 2 == 0 {
+    return true
+  }
+
+  return false
+}
+
+func main() {
+  rand.Seed(time.Now().UTC().UnixNano())
+  heap := binary_heap.NewHeap(minHeapPreferEven)
+
+  for i := 0; i < 1000; i++ {
+    heap.Insert(fmt.Sprintf("%3d", i), rand.Intn(10000))
   }
 
   for !heap.IsEmpty() {

@@ -1,18 +1,18 @@
 package binary_heap
 
-type Node struct {
+type node struct {
   value interface{}
   priority int
 }
 
 type Heap struct {
-  list []Node
+  list []node
   higher func (int, int) bool
 }
 
 func NewHeap(higher func (int, int) bool) *Heap {
   heap := new(Heap)
-  heap.list = make([]Node, 0, 10)
+  heap.list = make([]node, 0, 10)
   heap.higher = higher
   return heap
 }
@@ -22,7 +22,7 @@ func (heap *Heap) IsEmpty() bool {
 }
 
 func (heap *Heap) Insert(value interface{}, priority int) {
-  heap.list = append(heap.list, Node { value, priority })
+  heap.list = append(heap.list, node { value, priority })
   heap.upHeapFrom(len(heap.list)-1)
 }
 
