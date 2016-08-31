@@ -2,7 +2,6 @@ package huffman
 
 import(
   "fmt"
-  "strings"
   "jamis/week5/binary_heap"
 )
 
@@ -17,13 +16,15 @@ func minHeap(a int, b int) bool {
   return a < b
 }
 
-func Prioritize(text string) *binary_heap.Heap {
-  runes := strings.Split(text, "")
+func Prioritize(tokens Tokenizer) *binary_heap.Heap {
   counter := make(map[string]int)
-  total := len(text)
+  total := 0
 
-  for _, rune := range runes {
-    counter[rune] += 1
+  for {
+    token := tokens.NextToken()
+    if token == "" { break }
+    counter[token] += 1
+    total += 1
   }
 
   heap := binary_heap.NewHeap(minHeap)
