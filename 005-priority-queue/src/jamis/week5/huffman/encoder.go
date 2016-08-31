@@ -8,8 +8,7 @@ import(
 
 type node struct {
   parent *node
-  left *node
-  right *node
+  children []*node
   value string
   weight int
 }
@@ -31,35 +30,49 @@ func Prioritize(text string) *binary_heap.Heap {
 
   for rune, count := range counter {
     weight := 1000 * count / total
-    heap.Insert(node { nil, nil, nil, rune, weight }, weight)
+    heap.Insert(node { nil, nil, rune, weight }, weight)
   }
 
   return heap
 }
 
-func Encode(heap *binary_heap.Heap) node {
+func Encode(heap *binary_heap.Heap, arity int) node {
   for {
-    var a, b node
-
     t, _ := heap.Extract()
-    a = t.(node)
+    a := t.(node)
     if heap.IsEmpty() { return a }
 
-    t, _ = heap.Extract()
-    b = t.(node)
+    parent := node {}
 
-    n := node { nil, &a, &b, a.value + ":" + b.value, a.weight+b.weight }
-    a.parent = &n
-    b.parent = &n
+    parent.children = make([]*node, 1, arity)
+    parent.children[0] = &a
 
-    heap.Insert(n, n.weight)
+    parent.weight = a.weight
+    parent.value = a.value
+
+    for i := 1; i < arity; i++ {
+      t, _ = heap.Extract()
+      b := t.(node)
+      b.parent = &parent
+      parent.children = append(parent.children, &b)
+      parent.weight += b.weight
+      parent.value += ":" + b.value
+      if heap.IsEmpty() { break }
+    }
+
+    heap.Insert(parent, parent.weight)
   }
 }
 
-func Dump(root *node, tag string) {
-  if root.left != nil {
-    Dump(root.left, tag + "0")
-    Dump(root.right, tag + "1")
+func Dump(root *node, alphabet string, tag string) {
+  if root.children != nil {
+    if len(root.children) > len(alphabet) {
+      panic("alphabet isn't long enough!")
+    }
+
+    for index, child := range root.children {
+      Dump(child, alphabet, tag + alphabet[index:index+1])
+    }
   } else {
     fmt.Println(root.value, tag)
   }
