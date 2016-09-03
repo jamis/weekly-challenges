@@ -70,7 +70,7 @@ asis DF
 ```
 
 I *really* liked this challenge. The Huffman coder was remarkably
-straightforward once I understand the algorithm, and it was very fun
+straightforward once I understood the algorithm, and it was very fun
 to play with.
 
 
