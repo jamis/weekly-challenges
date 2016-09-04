@@ -12,6 +12,7 @@ The challenges are:
 2. Grammar-Based Name Generation -- https://medium.com/@jamis/weekly-programming-challenge-2-33ef134b39cd
 3. Solving Mazes -- https://medium.com/@jamis/weekly-programming-challenge-3-932b16ddd957
 4. Drawing Lines -- https://medium.com/@jamis/weekly-programming-challenge-4-7fe42f28d5d4
+5. Binary Heap and Priority Queue -- https://medium.com/@jamis/weekly-programming-challenge-5-e7677458f646
 
 
 ## LICENSE
