@@ -2,101 +2,177 @@
 #include <math.h>
 #include "perlin.h"
 
-static float* compute_vectors(int width, int height);
-static float lerp(float a0, float a1, float w);
-static float fade(float t);
-static float dot_grid_gradient(float* vectors, int ix, int iy, int w, float x, float y);
-static float perlin_at(float* vectors, float x, float y, int width);
+typedef struct {
+  int size; /* cubes per unit -- and points per cube */
+  int points; /* number of points per unit (size*size) */
+  double *vectors;
+} perlin_state_t;
+
+static double lerp(double a, double b, double t);
+static double fade(double t);
+static double gradient(perlin_state_t *state, int ix, int iy, int iz, double x, double y, double z);
 
 
-static float lerp(float a0, float a1, float w)
+perlin_t perlin_init(int size)
 {
-  return (1.0 - w) * a0 + w * a1;
+  int sizen = size + 1;
+  int count = sizen * sizen * sizen;
+
+  perlin_state_t *data = (perlin_state_t*)malloc(sizeof(perlin_state_t));
+
+  data->size = size;
+  data->points = size*size;
+  data->vectors = (double*)malloc(sizeof(double) * count * 3);
+
+  for(int i = 0; i <= size; i++) {
+    int zbase = i * sizen * sizen;
+
+    for(int j = 0; j <= size; j++) {
+      int ybase = zbase + j * sizen;
+
+      for(int k = 0; k <= size; k++) {
+        int index = 3 * (ybase + k);
+
+        if (k == size) {
+          int origin = 3 * ybase;
+          data->vectors[index+0] = data->vectors[origin+0];
+          data->vectors[index+1] = data->vectors[origin+1];
+          data->vectors[index+2] = data->vectors[origin+2];
+        } else if (j == size) {
+          int origin = 3 * (zbase + k);
+          data->vectors[index+0] = data->vectors[origin+0];
+          data->vectors[index+1] = data->vectors[origin+1];
+          data->vectors[index+2] = data->vectors[origin+2];
+        } else if (i == size) {
+          int origin = 3 * (j * sizen + k);
+          data->vectors[index+0] = data->vectors[origin+0];
+          data->vectors[index+1] = data->vectors[origin+1];
+          data->vectors[index+2] = data->vectors[origin+2];
+        } else {
+          double theta = (rand() % 36) * 18.0 / M_PI;
+          double phi   = (rand() % 18) * 18.0 / M_PI;
+
+          double sin_t = sin(theta);
+          double cos_t = cos(theta);
+          double sin_p = sin(phi);
+          double cos_p = cos(phi);
+
+          data->vectors[index+0] = sin_t * cos_p;
+          data->vectors[index+1] = sin_t * sin_p;
+          data->vectors[index+2] = cos_t;
+        }
+      }
+    }
+  }
+
+  return (perlin_t)data;
 }
 
-static float fade(float t)
+void perlin_destroy(perlin_t state)
 {
-  float t3 = t * t * t;
-  float t4 = t * t3;
-  float t5 = t * t4;
+  perlin_state_t *data = (perlin_state_t*)state;
+
+  free(data->vectors);
+  data->vectors = NULL;
+
+  free(data);
+}
+
+double perlin_at(perlin_t state, double x, double y, double z)
+{
+  perlin_state_t *data = (perlin_state_t*)state;
+
+  /* normalize x,y,z to fit within the unit cube */
+  x = fmod(x, data->size);
+  y = fmod(y, data->size);
+  z = fmod(z, data->size);
+
+  /* identify the cube that contains the point */
+  int x0 = (int)x;
+  int y0 = (int)y;
+  int z0 = (int)z;
+
+  /* compute distance from point to origin of cube */
+  double dx = x - x0;
+  double dy = y - y0;
+  double dz = z - z0;
+
+  /* compute the fade curve of the point within the cube */
+  double u = fade(dx);
+  double v = fade(dy);
+  double w = fade(dz);
+
+  /* compute gradient from each corner of the cube */
+  double p000 = gradient(data, x0,   y0,   z0,   x, y, z);
+  double p100 = gradient(data, x0+1, y0,   z0,   x, y, z);
+  double p010 = gradient(data, x0,   y0+1, z0,   x, y, z);
+  double p001 = gradient(data, x0,   y0,   z0+1, x, y, z);
+  double p110 = gradient(data, x0+1, y0+1, z0,   x, y, z);
+  double p101 = gradient(data, x0+1, y0,   z0+1, x, y, z);
+  double p011 = gradient(data, x0,   y0+1, z0+1, x, y, z);
+  double p111 = gradient(data, x0+1, y0+1, z0+1, x, y, z);
+
+  double u1 = lerp(p000, p100, u);
+  double u2 = lerp(p010, p110, u);
+  double u3 = lerp(p001, p101, u);
+  double u4 = lerp(p011, p111, u);
+
+  double v1 = lerp(u1, u2, v);
+  double v2 = lerp(u3, u4, v);
+
+  return lerp(v1, v2, w);
+}
+
+void perlin(image_t image, perlin_t state, double dx, double dy, double dz, double sx, double sy, double sz)
+{
+  perlin_state_t *data = (perlin_state_t*)state;
+
+  int width = image_width(image);
+  int height = image_height(image);
+
+  sx *= (float)data->size / (float)width;
+  sy *= (float)data->size / (float)height;
+
+  for (int y = 0; y < height; y++) {
+    for (int x = 0; x < width; x++)
+    {
+      double value = perlin_at(state, (x+dx)*sx, (y+dy)*sy, dz*sz);
+      uint8_t intensity = (int)(255.0 * (value + 1) / 2.0);
+      color_t color = (intensity << 16) + (intensity << 8) + intensity;
+      image_set_pixel(image, x, y, color);
+    }
+  }
+}
+
+static double lerp(double a, double b, double t)
+{
+  return (1.0 - t) * a + t * b;
+}
+
+static double fade(double t)
+{
+  double t3 = t * t * t;
+  double t4 = t * t3;
+  double t5 = t * t4;
 
   return 6.0 * t5 - 15.0 * t4 + 10.0 * t3;
 }
 
-static float dot_grid_gradient(float* vectors, int ix, int iy, int w, float x, float y)
+static double gradient(perlin_state_t *state, int ix, int iy, int iz, double x, double y, double z)
 {
-  float dx = x - (float)ix;
-  float dy = y - (float)iy;
+  int index = 3 * (
+                iz * (state->size+1) * (state->size+1) +
+                iy * (state->size+1) +
+                ix
+              );
 
-  int index = 2 * (iy * w + ix);
+  double dx = x - ix;
+  double dy = y - iy;
+  double dz = z - iz;
 
-  return (dx * vectors[index] + dy * vectors[index+1]);
-}
+  double a = state->vectors[index+0];
+  double b = state->vectors[index+1];
+  double c = state->vectors[index+2];
 
-static float perlin_at(float* vectors, float x, float y, int width)
-{
-  int x0 = (x > 0.0) ? (int)x : ((int)x - 1);
-  int x1 = x0 + 1;
-  int y0 = (y > 0.0) ? (int)y : ((int)y - 1);
-  int y1 = y0 + 1;
-
-  float sx = fade(x - (float)x0);
-  float sy = fade(y - (float)y0);
-
-  float n0 = dot_grid_gradient(vectors, x0, y0, width, x, y);
-  float n1 = dot_grid_gradient(vectors, x1, y0, width, x, y);
-  float ix0 = lerp(n0, n1, sx);
-  n0 = dot_grid_gradient(vectors, x0, y1, width, x, y);
-  n1 = dot_grid_gradient(vectors, x1, y1, width, x, y);
-  float ix1 = lerp(n0, n1, sx);
-
-  return lerp(ix0, ix1, sy);
-}
-
-void perlin(image_t img, int gridw, int gridh)
-{
-  int width = image_width(img);
-  int height = image_height(img);
-
-  float *vectors = compute_vectors(gridw, gridh);
-
-  float sx = (float)(gridw-1) / (float)width;
-  float sy = (float)(gridh-1) / (float)height;
-
-  for (int y = 0; y < height; y++)
-    for (int x = 0; x < width; x++)
-    {
-      float value = perlin_at(vectors, x*sx, y*sy, gridw);
-      uint8_t intensity = (int)(255.0 * (value + 1) / 2.0);
-      color_t color = (intensity << 16) + (intensity << 8) + intensity;
-      image_set_pixel(img, x, y, color);
-    }
-
-  free(vectors);
-}
-
-
-static float *compute_vectors(int width, int height)
-{
-  float *vectors = (float*)malloc(2 * width * height * sizeof(float));
-
-  for(int y = 0; y < height; y++)
-    for(int x = 0; x < width; x++)
-    {
-      int index = 2 * (y * width + x);
-
-      if (x == width-1) {
-        vectors[index+0] = vectors[y*width*2];
-        vectors[index+1] = vectors[y*width*2+1];
-      } else if (y == height-1) {
-        vectors[index+0] = vectors[x*2];
-        vectors[index+1] = vectors[x*2+1];
-      } else {
-        float angle = (rand() % 360) * M_PI / 180.0;
-        vectors[index+0] = cos(angle); // x component
-        vectors[index+1] = sin(angle); // y component
-      }
-    }
-
-  return vectors;
+  return dx * a + dy * b * dz * c;
 }
