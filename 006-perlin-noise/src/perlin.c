@@ -3,66 +3,31 @@
 #include "perlin.h"
 
 typedef struct {
-  int size; /* cubes per unit -- and points per cube */
-  int points; /* number of points per unit (size*size) */
-  double *vectors;
+  uint16_t p[512];
 } perlin_state_t;
 
 static double lerp(double a, double b, double t);
 static double fade(double t);
-static double gradient(perlin_state_t *state, int ix, int iy, int iz, double x, double y, double z);
+static double gradient(uint16_t hash, double x, double y, double z);
 
 
-perlin_t perlin_init(int size)
+perlin_t perlin_init()
 {
-  int sizen = size + 1;
-  int count = sizen * sizen * sizen;
-
   perlin_state_t *data = (perlin_state_t*)malloc(sizeof(perlin_state_t));
 
-  data->size = size;
-  data->points = size*size;
-  data->vectors = (double*)malloc(sizeof(double) * count * 3);
+  for(int i = 0; i < 256; i++) {
+    data->p[i] = i;
+  }
 
-  for(int i = 0; i <= size; i++) {
-    int zbase = i * sizen * sizen;
+  for(int i = 255; i >= 1; i--) {
+    int j = rand() % i;
+    int temp = data->p[i];
+    data->p[i] = data->p[j];
+    data->p[j] = temp;
+  }
 
-    for(int j = 0; j <= size; j++) {
-      int ybase = zbase + j * sizen;
-
-      for(int k = 0; k <= size; k++) {
-        int index = 3 * (ybase + k);
-
-        if (k == size) {
-          int origin = 3 * ybase;
-          data->vectors[index+0] = data->vectors[origin+0];
-          data->vectors[index+1] = data->vectors[origin+1];
-          data->vectors[index+2] = data->vectors[origin+2];
-        } else if (j == size) {
-          int origin = 3 * (zbase + k);
-          data->vectors[index+0] = data->vectors[origin+0];
-          data->vectors[index+1] = data->vectors[origin+1];
-          data->vectors[index+2] = data->vectors[origin+2];
-        } else if (i == size) {
-          int origin = 3 * (j * sizen + k);
-          data->vectors[index+0] = data->vectors[origin+0];
-          data->vectors[index+1] = data->vectors[origin+1];
-          data->vectors[index+2] = data->vectors[origin+2];
-        } else {
-          double theta = (rand() % 36) * 18.0 / M_PI;
-          double phi   = (rand() % 18) * 18.0 / M_PI;
-
-          double sin_t = sin(theta);
-          double cos_t = cos(theta);
-          double sin_p = sin(phi);
-          double cos_p = cos(phi);
-
-          data->vectors[index+0] = sin_t * cos_p;
-          data->vectors[index+1] = sin_t * sin_p;
-          data->vectors[index+2] = cos_t;
-        }
-      }
-    }
+  for(int i = 0; i < 256; i++) {
+    data->p[i+256] = data->p[i];
   }
 
   return (perlin_t)data;
@@ -71,10 +36,6 @@ perlin_t perlin_init(int size)
 void perlin_destroy(perlin_t state)
 {
   perlin_state_t *data = (perlin_state_t*)state;
-
-  free(data->vectors);
-  data->vectors = NULL;
-
   free(data);
 }
 
@@ -82,35 +43,33 @@ double perlin_at(perlin_t state, double x, double y, double z)
 {
   perlin_state_t *data = (perlin_state_t*)state;
 
-  /* normalize x,y,z to fit within the unit cube */
-  x = fmod(x, data->size);
-  y = fmod(y, data->size);
-  z = fmod(z, data->size);
+  int X = (int)x & 255;
+  int Y = (int)y & 255;
+  int Z = (int)z & 255;
 
-  /* identify the cube that contains the point */
-  int x0 = (int)x;
-  int y0 = (int)y;
-  int z0 = (int)z;
+  x -= (int)x;
+  y -= (int)y;
+  z -= (int)z;
 
-  /* compute distance from point to origin of cube */
-  double dx = x - x0;
-  double dy = y - y0;
-  double dz = z - z0;
+  double u = fade(x);
+  double v = fade(y);
+  double w = fade(z);
 
-  /* compute the fade curve of the point within the cube */
-  double u = fade(dx);
-  double v = fade(dy);
-  double w = fade(dz);
+  int A  = data->p[X  ]+Y;
+  int AA = data->p[A  ]+Z;
+  int AB = data->p[A+1]+Z;
+  int B  = data->p[X+1]+Y;
+  int BA = data->p[B  ]+Z;
+  int BB = data->p[B+1]+Z;
 
-  /* compute gradient from each corner of the cube */
-  double p000 = gradient(data, x0,   y0,   z0,   x, y, z);
-  double p100 = gradient(data, x0+1, y0,   z0,   x, y, z);
-  double p010 = gradient(data, x0,   y0+1, z0,   x, y, z);
-  double p001 = gradient(data, x0,   y0,   z0+1, x, y, z);
-  double p110 = gradient(data, x0+1, y0+1, z0,   x, y, z);
-  double p101 = gradient(data, x0+1, y0,   z0+1, x, y, z);
-  double p011 = gradient(data, x0,   y0+1, z0+1, x, y, z);
-  double p111 = gradient(data, x0+1, y0+1, z0+1, x, y, z);
+  double p000 = gradient(data->p[AA  ], x,   y,   z  );
+  double p100 = gradient(data->p[BA  ], x-1, y,   z  );
+  double p010 = gradient(data->p[AB  ], x,   y-1, z  );
+  double p110 = gradient(data->p[BB  ], x-1, y-1, z  );
+  double p001 = gradient(data->p[AA+1], x,   y,   z-1);
+  double p101 = gradient(data->p[BA+1], x-1, y,   z-1);
+  double p011 = gradient(data->p[AB+1], x,   y-1, z-1);
+  double p111 = gradient(data->p[BB+1], x-1, y-1, z-1);
 
   double u1 = lerp(p000, p100, u);
   double u2 = lerp(p010, p110, u);
@@ -123,20 +82,19 @@ double perlin_at(perlin_t state, double x, double y, double z)
   return lerp(v1, v2, w);
 }
 
-void perlin(image_t image, perlin_t state, double dx, double dy, double dz, double sx, double sy, double sz)
+void perlin(image_t image, perlin_t state, double frequency, double dx, double dy, double dz)
 {
   perlin_state_t *data = (perlin_state_t*)state;
 
   int width = image_width(image);
   int height = image_height(image);
 
-  sx *= (float)data->size / (float)width;
-  sy *= (float)data->size / (float)height;
+  double scale = frequency / (float)width;
 
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++)
     {
-      double value = perlin_at(state, (x+dx)*sx, (y+dy)*sy, dz*sz);
+      double value = perlin_at(state, (x+dx)*scale, (y+dy)*scale, dz*scale);
       uint8_t intensity = (int)(255.0 * (value + 1) / 2.0);
       color_t color = (intensity << 16) + (intensity << 8) + intensity;
       image_set_pixel(image, x, y, color);
@@ -158,21 +116,12 @@ static double fade(double t)
   return 6.0 * t5 - 15.0 * t4 + 10.0 * t3;
 }
 
-static double gradient(perlin_state_t *state, int ix, int iy, int iz, double x, double y, double z)
+static double gradient(uint16_t hash, double x, double y, double z)
 {
-  int index = 3 * (
-                iz * (state->size+1) * (state->size+1) +
-                iy * (state->size+1) +
-                ix
-              );
+  int h = hash % 15;
+  double u = (h < 8) ? x : y;
+  double v = (h < 4) ? y : ((h == 12 || h == 14) ? x : z);
 
-  double dx = x - ix;
-  double dy = y - iy;
-  double dz = z - iz;
-
-  double a = state->vectors[index+0];
-  double b = state->vectors[index+1];
-  double c = state->vectors[index+2];
-
-  return dx * a + dy * b * dz * c;
+  return (((h&1) == 0) ? u : -u) +
+         (((h&2) == 0) ? v : -v);
 }
