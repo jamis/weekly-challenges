@@ -39,6 +39,21 @@ void perlin_destroy(perlin_t state)
   free(data);
 }
 
+void perlin_config_init(perlin_config_t *config, perlin_t state)
+{
+  config->state = state;
+
+  config->octaves = 1;
+  config->persistence = 0.5;
+  config->dx = 0.0;
+  config->dy = 0.0;
+  config->dz = 0.0;
+  config->color = perlin_grayscale;
+
+  config->frequency = 1.0;
+  config->amplitude = 1.0;
+}
+
 double perlin_at(perlin_t state, double x, double y, double z)
 {
   perlin_state_t *data = (perlin_state_t*)state;
@@ -82,23 +97,55 @@ double perlin_at(perlin_t state, double x, double y, double z)
   return lerp(v1, v2, w);
 }
 
-void perlin(image_t image, perlin_t state, double frequency, double dx, double dy, double dz)
+void perlin(image_t image, perlin_config_t *config)
 {
-  perlin_state_t *data = (perlin_state_t*)state;
-
   int width = image_width(image);
   int height = image_height(image);
-
-  double scale = frequency / (float)width;
 
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++)
     {
-      double value = perlin_at(state, (x+dx)*scale, (y+dy)*scale, dz*scale);
-      uint8_t intensity = (int)(255.0 * (value + 1) / 2.0);
-      color_t color = (intensity << 16) + (intensity << 8) + intensity;
+      double maxValue = 0.0;
+      double total = 0.0;
+
+      double frequency = config->frequency / (float)width;
+      double amplitude = config->amplitude;
+
+      for (int octave = 0; octave < config->octaves; octave++) {
+        double value = perlin_at(config->state,
+          (x+config->dx)*frequency,
+          (y+config->dy)*frequency,
+          config->dz*frequency) * amplitude;
+
+        maxValue += amplitude;
+        total += value;
+
+        amplitude *= config->persistence;
+        frequency *= 2.0;
+      }
+
+      double value = total / maxValue;
+
+      color_t color = config->color(value);
       image_set_pixel(image, x, y, color);
     }
+  }
+}
+
+color_t perlin_grayscale(double value)
+{
+  uint8_t intensity = (int)(255.0 * (value + 1) / 2.0);
+  return (intensity << 16) + (intensity << 8) + intensity;
+}
+
+color_t perlin_fire(double value)
+{
+  if (value <= 0.0) {
+    return 0x000000;
+  } else {
+    int red = 255;
+    int green = 255 * value;
+    return (red << 16) + (green << 8);
   }
 }
 
