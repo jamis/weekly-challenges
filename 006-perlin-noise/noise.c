@@ -6,26 +6,55 @@
 #include "perlin.h"
 
 typedef struct {
-  int      frames;
-  color_fn color;
-  double   speed_x;
-  double   speed_y;
-  double   speed_z;
-  char*    frame_name;
-  time_t   seed;
-  int      width;
-  int      height;
-  double   frequency;
-  double   persistence;
-  int      octaves;
+  int        frames;
+  recolor_fn color;
+  double     speed_x;
+  double     speed_y;
+  double     speed_z;
+  char*      frame_name;
+  time_t     seed;
+  int        width;
+  int        height;
+  double     frequency;
+  double     persistence;
+  int        octaves;
 } options_t;
+
+color_t recolor_fire(uint8_t red, uint8_t green, uint8_t blue)
+{
+  if (red < 128) {
+    return 0x000000;
+  } else {
+    double value = red / 255.0;
+    red = 255;
+    green = 255 * value;
+    return (red << 16) + (green << 8);
+  }
+}
+
+color_t recolor_terrain(uint8_t red, uint8_t green, uint8_t blue)
+{
+  if (red < 64) {
+    return 0x0b1fa0;
+  } else if (red < 128) {
+    return 0x0e27cd;
+  } else if (red < 140) {
+    return 0xffd574;
+  } else if (red < 180) {
+    return 0x2f9742;
+  } else if (red < 220) {
+    return 0x937751;
+  } else {
+    return 0xffffff;
+  }
+}
 
 void parse_options(int argc, char *argv[], options_t *options)
 {
   int opt = 1;
 
   options->frames      = 1;
-  options->color       = perlin_grayscale;
+  options->color       = NULL;
   options->speed_x     = 4.0;
   options->speed_y     = 4.0;
   options->speed_z     = 4.0;
@@ -49,9 +78,9 @@ void parse_options(int argc, char *argv[], options_t *options)
 
       case 'c':
         switch(argv[opt++][0]) {
-          case 'g': options->color = perlin_grayscale; break;
-          case 'f': options->color = perlin_fire; break;
-          case 't': options->color = perlin_terrain; break;
+          case 'g': options->color = NULL; break;
+          case 'f': options->color = recolor_fire; break;
+          case 't': options->color = recolor_terrain; break;
           default: printf("unknown color option: %s\n", argv[opt-1]);
         }
         break;
@@ -67,11 +96,11 @@ void parse_options(int argc, char *argv[], options_t *options)
         break;
 
       case 'y':
-        options->speed_x = atof(argv[opt++]);
+        options->speed_y = atof(argv[opt++]);
         break;
 
       case 'z':
-        options->speed_x = atof(argv[opt++]);
+        options->speed_z = atof(argv[opt++]);
         break;
 
       case 'n':
@@ -138,7 +167,6 @@ int main(int argc, char *argv[]) {
   config.frequency = options.frequency;
   config.persistence = options.persistence;
   config.octaves = options.octaves;
-  config.color = options.color;
 
   for(int i = 0; i < options.frames; i++) {
     char fname[256];
@@ -148,6 +176,9 @@ int main(int argc, char *argv[]) {
     config.dz = i*options.speed_z;
 
     perlin(img, &config);
+
+    image_normalize(img);
+    if (options.color) image_recolor(img, options.color);
 
     sprintf(fname, options.frame_name, i);
     image_save_ppm(img, fname);
