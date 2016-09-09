@@ -13,6 +13,7 @@ The challenges are:
 3. Solving Mazes -- https://medium.com/@jamis/weekly-programming-challenge-3-932b16ddd957
 4. Drawing Lines -- https://medium.com/@jamis/weekly-programming-challenge-4-7fe42f28d5d4
 5. Binary Heap and Priority Queue -- https://medium.com/@jamis/weekly-programming-challenge-5-e7677458f646
+6. Perlin Noise -- https://medium.com/@jamis/weekly-programming-challenge-6-83fa37e9e737
 
 
 ## LICENSE
