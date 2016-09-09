@@ -149,6 +149,23 @@ color_t perlin_fire(double value)
   }
 }
 
+color_t perlin_terrain(double value)
+{
+  if (value < -0.5) {
+    return 0x00007f;
+  } else if (value < 0.0) {
+    return 0x0000ff;
+  } else if (value < 0.1) {
+    return 0xffdf00;
+  } else if (value < 0.4) {
+    return 0x30ff30;
+  } else if (value < 0.8) {
+    return 0x7f5000;
+  } else {
+    return 0xffffff;
+  }
+}
+
 static double lerp(double a, double b, double t)
 {
   return (1.0 - t) * a + t * b;

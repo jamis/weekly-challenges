@@ -30,5 +30,6 @@ double perlin_at(perlin_t state, double x, double y, double z);
 
 color_t perlin_grayscale(double value);
 color_t perlin_fire(double value);
+color_t perlin_terrain(double value);
 
 #endif
