@@ -49,6 +49,16 @@ color_t recolor_terrain(uint8_t red, uint8_t green, uint8_t blue)
   }
 }
 
+color_t recolor_clouds(uint8_t red, uint8_t green, uint8_t blue)
+{
+  if (red < 180) {
+    return 0xcfe9ff;
+  } else {
+    int d = 255 - (red - 180) / 2;
+    return (d << 16) + (d << 8) + d;
+  }
+}
+
 void parse_options(int argc, char *argv[], options_t *options)
 {
   int opt = 1;
@@ -81,6 +91,7 @@ void parse_options(int argc, char *argv[], options_t *options)
           case 'g': options->color = NULL; break;
           case 'f': options->color = recolor_fire; break;
           case 't': options->color = recolor_terrain; break;
+          case 'c': options->color = recolor_clouds; break;
           default: printf("unknown color option: %s\n", argv[opt-1]);
         }
         break;
@@ -134,19 +145,19 @@ void parse_options(int argc, char *argv[], options_t *options)
         printf("       [-F num] [-o num] [-p num]\n");
         printf("       [-n name.ppm]\n");
         printf("\n");
-        printf("  -f num   :: number of frames to generate\n");
-        printf("  -c [gft] :: color scheme to use (g=grayscale, f=fire, t=terrain)\n");
-        printf("  -r seed  :: random seed to initialize PRNG\n");
-        printf("  -s num   :: floating point number for xyz speed\n");
-        printf("  -x num   :: floating point number for x speed\n");
-        printf("  -y num   :: floating point number for y speed\n");
-        printf("  -z num   :: floating point number for z speed\n");
-        printf("  -w num   :: width of frame to generate\n");
-        printf("  -h num   :: height of frame to generate\n");
-        printf("  -F num   :: initial frequency for first octave\n");
-        printf("  -o num   :: number of octaves to compute\n");
-        printf("  -p num   :: persistence value for subsequent octaves\n");
-        printf("  -n name  :: file name to use for frames\n");
+        printf("  -f num    :: number of frames to generate\n");
+        printf("  -c [gftc] :: color scheme to use (g=grayscale, f=fire, t=terrain, c=clouds)\n");
+        printf("  -r seed   :: random seed to initialize PRNG\n");
+        printf("  -s num    :: floating point number for xyz speed\n");
+        printf("  -x num    :: floating point number for x speed\n");
+        printf("  -y num    :: floating point number for y speed\n");
+        printf("  -z num    :: floating point number for z speed\n");
+        printf("  -w num    :: width of frame to generate\n");
+        printf("  -h num    :: height of frame to generate\n");
+        printf("  -F num    :: initial frequency for first octave\n");
+        printf("  -o num    :: number of octaves to compute\n");
+        printf("  -p num    :: persistence value for subsequent octaves\n");
+        printf("  -n name   :: file name to use for frames\n");
         exit(-1);
     }
   }
