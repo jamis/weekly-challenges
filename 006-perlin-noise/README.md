@@ -39,8 +39,8 @@ usage: ./noise [-f num] [-c [gf]] [-r seed]
   -x num    :: floating point number for x speed
   -y num    :: floating point number for y speed
   -z num    :: floating point number for z speed
-  -w num    :: width of frame to generate
-  -h num    :: height of frame to generate
+  -W num    :: width of frame to generate
+  -H num    :: height of frame to generate
   -F num    :: initial frequency for first octave
   -o num    :: number of octaves to compute
   -p num    :: persistence value for subsequent octaves
