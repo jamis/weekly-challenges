@@ -19,7 +19,7 @@ To build it:
 
 ```sh
 $ make
-``
+```
 
 This will build the source and produce an executable named `noise`. To
 run it:
