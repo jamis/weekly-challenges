@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<script src="./libs/illustrated-bplus-tree.js"></script>
+<script src="./vendor/d3.min.js"></script>
+<script>
+  var BPlusTree = exports.BPlusTree;
+  var tree = BPlusTree.make(2);
+  var state = null;
+  var currentHighlight = null;
+
+  function nodeRow(node) {
+    var row = 0;
+
+    while (node.parent) {
+      row += 1;
+      node = tree.nodes[node.parent];
+    }
+
+    return row;
+  }
+
+  function nodePosition(nodeIndex) {
+    var node = tree.nodes[nodeIndex];
+
+    if (!node.parent) {
+      return [0, 1];
+    } else {
+      var parent = tree.nodes[node.parent];
+      for(var pos = 0; pos < parent.children.length; pos++) {
+        if (parent.children[pos].value == nodeIndex)
+          return [pos, parent.children.length];
+      }
+    }
+  }
+
+  function nodeX(nodeIndex, pos) {
+    var pos = pos || nodePosition(nodeIndex);
+    var position = pos[0], count = pos[1];
+    var totalSize = count * nodeWidth + (count - 1) * padding;
+    var indent = Math.floor((width - totalSize) / 2);
+    return indent + position * (nodeWidth + padding);
+  }
+
+  function nodeY(node) {
+    var row = nodeRow(node);
+    return row * nodeHeight + (row + 1) * padding;
+  }
+
+  var handlers = {
+    "node:root": function(index) {
+      var nodes = d3.select("svg").
+                    selectAll("rect").
+                    data(tree.nodes);
+
+      // scootch everything down a row
+      nodes.
+        transition().
+          duration(100).
+          attr("y", function(n) { return nodeY(n); });
+
+      // new root comes in off-screen and moves down
+      nodes.enter().
+        append("rect").
+          attr("id", function(n, i) { return "node" + i; }).
+          attr("class", function(n) { return "node cohort" + n.cohort; }).
+          attr("x", function(n, i) { return nodeX(i); }).
+          attr("y", -nodeHeight).
+          attr("width", nodeWidth).
+          attr("height", nodeHeight).
+          attr("fill", "#ccc").
+        transition().
+          duration(100).
+          attr("y", function(n) { return nodeY(n); });
+
+      console.log("new root at " + index);
+    },
+
+    "node:highlight": function(index) {
+      if (currentHighlight) {
+        d3.select("#node" + currentHighlight).
+          transition().
+            duration(100).
+            attr("fill", "#ccc");
+      }
+
+      d3.select("#node" + index).
+        transition().
+          duration(100).
+          attr("fill", "yellow");
+
+      currentHighlight = index;
+
+      console.log("highlighting node at " + index);
+    },
+
+    "node:insert": function(index, position) {
+      console.log("inserted entry at " + position + " of node " + index);
+    },
+
+    "search:range": function(index, lo, hi) {
+      console.log("searching range of node #" + index + " from " + lo + "..." + hi);
+    },
+
+    "search:mid": function(index, mid) {
+      console.log("midpoint is at " + mid);
+    },
+
+    "search:found": function(index, position, last) {
+      if (position) {
+        console.log("found goal at " + position);
+      } else {
+        console.log("goal not found, ended at " + last);
+      }
+    },
+
+    "split:mid": function(index, splitAt) {
+      console.log("preparing to split " + index + " at " + splitAt);
+    },
+
+    "split:nodes": function(left, right) {
+      var leftNode = tree.nodes[left];
+      var rightNode = tree.nodes[right];
+      var master = d3.select("svg #node" + right);
+
+      var nodes = d3.select("svg").
+                    selectAll("rect").
+                    data(tree.nodes);
+
+      nodes.
+        filter(".cohort" + leftNode.cohort).
+        transition().
+          duration(100).
+          attr("x", function(n, i) { return nodeX(i, rightNode.parent ? null : [1, 2]); });
+
+      nodes.enter().
+        append("rect").
+          attr("id", function(n, i) { return "node" + i; }).
+          attr("class", function(n) { return "node cohort" + n.cohort; }).
+          attr("x", master.attr("x")).
+          attr("y", master.attr("y")).
+          attr("width", nodeWidth).
+          attr("height", nodeHeight).
+          attr("fill", "#ccc").
+        transition().
+          duration(100).
+          attr("x", function(n, i) { return nodeX(i, rightNode.parent ? null : [0, 2]); });
+
+      console.log("split node into two, " + left + " (new) and " + right);
+    }
+  };
+
+  function addValue() {
+    var number = Math.floor(10000 * Math.random());
+
+    var ticker = document.getElementById("ticker");
+    ticker.innerHTML = "OK, we're going to be adding " + number;
+
+    state = BPlusTree.insert(tree, number, number, treeHandler);
+    var addValue = document.getElementById("addValue");
+    var nextStep = document.getElementById("nextStep");
+
+    addValue.style = "display: none;";
+    nextStep.style = "";
+  }
+
+  function nextStep() {
+    if (!BPlusTree.next(state)) {
+      var addValue = document.getElementById("addValue");
+      var nextStep = document.getElementById("nextStep");
+      addValue.style = "";
+      nextStep.style = "display: none;";
+    }
+  }
+
+  function treeHandler(action) {
+    if (handlers[action]) {
+      var args = [...arguments].slice(1);
+      handlers[action].apply(null, args);
+    } else {
+      console.log("no handler for " + action + "!!");
+    }
+  }
+</script>
+<style type="text/css">
+  .node {
+    stroke: black;
+  }
+</style>
+<body>
+<p>
+  <button onclick="addValue()" id="addValue">Add value</button>
+  <span id="ticker"></span>
+  <button onclick="nextStep()" id="nextStep" style="display: none;">Next step</button>
+</p>
+<p>
+  <svg width="960" height="500">
+  </svg>
+</p>
+</body>
+<script>
+  var svg = d3.select("svg");
+  var width = svg.attr("width");
+  var height = svg.attr("height");
+  var padding = 10;
+  var nodeWidth = 50;
+  var nodeHeight = 20;
+</script>
+</html>
