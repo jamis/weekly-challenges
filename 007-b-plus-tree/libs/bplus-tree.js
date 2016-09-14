@@ -43,7 +43,7 @@
       this.values.splice(index, 0, value);
 
       if (this.keys.length > this.fanout) {
-        var mid = this.keys.length / 2;
+        var mid = Math.floor(this.keys.length / 2);
         var twin = new BPlusTreeLeafNode(this.fanout);
         twin.keys = this.keys.slice(0, mid);
         twin.values = this.values.slice(0, mid);
@@ -117,7 +117,7 @@
       this.children.splice(index, 0, node);
 
       if (this.children.length > this.fanout) {
-        var mid = this.keys.length / 2;
+        var mid = Math.floor(this.keys.length / 2);
         var twin = new BPlusTreeNode(this.fanout);
         twin.keys = this.keys.slice(0, mid-1);
         twin.children = this.children.slice(0, mid);
