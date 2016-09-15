@@ -4,6 +4,7 @@
       return {
         fanout: fanout,
         nodes: [],
+        cohorts: [],
         root: 0
       };
     },
@@ -102,10 +103,12 @@
     if (state.tree.nodes.length < 1) {
       state.tree.nodes[0] = {
         leaf: true,
+        index: 0,
         cohort: 0,
         children: [ { key: state.key, value: state.value } ]
       }
       state.tree.root = 0;
+      state.tree.cohorts[0] = [ 0 ];
 
       state.callback('node:root', 0);
       return false;
@@ -184,10 +187,11 @@
   function _splitNode__newNode(state) {
     var nodeIndex = state.current;
     var node = state.tree.nodes[nodeIndex];
-    var twin = { leaf: node.leaf, parent: node.parent, cohort: node.cohort };
 
     state.twin = state.tree.nodes.length;
+    var twin = { leaf: node.leaf, parent: node.parent, cohort: node.cohort, index: state.twin };
     state.tree.nodes[state.twin] = twin;
+    state.tree.cohorts[node.cohort].push(state.twin);
 
     twin.children = node.children.slice(0, state.splitAt);
     node.children = node.children.slice(state.splitAt);
@@ -242,14 +246,17 @@
     var node = state.tree.nodes[state.current];
     var twin = state.tree.nodes[state.twin];
 
+    state.tree.root = state.tree.nodes.length;
+
     var root = {
+      index: state.tree.root,
       cohort: node.cohort + 1,
       children: [ { key: state.twinKey, value: state.twin },
                   { key: null, value: state.current } ]
     };
 
-    state.tree.root = state.tree.nodes.length;
     state.tree.nodes[state.tree.root] = root;
+    state.tree.cohorts[root.cohort] = [ state.tree.root ];
 
     node.parent = state.tree.root;
     twin.parent = state.tree.root;
