@@ -6,8 +6,11 @@
 <script src="./vendor/velocity.min.js"></script>
 <script>
   var BPlusTree = exports.BPlusTree;
-  var tree = BPlusTree.make(5);
+  var tree = BPlusTree.make(3);
   var state = null;
+
+  var resize = false;
+  var zoom   = 1.0;
 
   var SVG = {
     el: function(tagname) {
@@ -27,18 +30,35 @@
       $(node.layout.$sprite).find(".label").html("");
       for(var i = 0; i < node.children.length; i++) {
         $(node.layout.$sprite).find(".cell" + i).addClass("active");
+        var label = "∧";
         if (node.leaf || i+1 < node.children.length) {
-          $(node.layout.$sprite).find(".label" + i).html(node.children[i].key);
+          label = node.children[i].key;
         }
+        $(node.layout.$sprite).find(".label" + i).html(label);
+      }
+    },
+
+    cellClicked: function() {
+      var $node = $(this).closest('.node');
+
+      var nodeIndex = $node.data('n');
+      var cellIndex = $(this).data('n');
+
+      var node = tree.nodes[nodeIndex];
+
+      if (cellIndex < node.children.length) {
+        var child = node.children[cellIndex];
+        console.log("clicked: " + child.value);
       }
     },
 
     $createNode: function(node, initx, inity) {
       var $group = SVG.$el('svg').attr({
-        "x"    : initx,
-        "y"    : inity,
-        "id"   : "node" + node.index,
-        "class": "node cohort" + node.cohort
+        "x"     : initx || 0,
+        "y"     : inity || 0,
+        "id"    : "node" + node.index,
+        "class" : "node cohort" + node.cohort,
+        "data-n": node.index
       });
 
       for(var i = 0; i < tree.fanout; i++) {
@@ -47,7 +67,8 @@
           "x"     : 2 + i * cellWidth,
           "y"     : 2,
           "width" : cellWidth,
-          "height": cellHeight
+          "height": cellHeight,
+          "data-n": i
         });
         $group.append($cell);
 
@@ -58,12 +79,18 @@
             "class"      : "label label" + i,
             "x"          : tx,
             "y"          : ty,
+            "data-n"     : i,
             "text-anchor": "middle",
             "font-family": "Verdana",
             "font-size"  : 7,
             "transform"  : "rotate(90," + tx + "," + ty + ")"
           });
         $group.append($text);
+
+        if (node.leaf) {
+          $cell.click(Layout.cellClicked);
+          $text.click(Layout.cellClicked);
+        }
 
         if (i > 0) {
           var $line = SVG.$el("line").attr({
@@ -94,38 +121,54 @@
       return $group;
     },
 
-    recompute: function(tree) {
+    recompute: function(tree, skipAnimation) {
       var count = tree.cohorts[0].length;
       var baseWidth = count * nodeWidth + (count - 1) * padding;
 
       var bestWidth = baseWidth + padding*2;
-      if (bestWidth > width) {
-        $tapestry.attr("width", bestWidth);
-        width = bestWidth;
-      }
-
       var maxHeight = (tree.cohorts.length + 1) * (nodeHeight + 2 * padding);
-      if (maxHeight > height) {
-        $tapestry.attr("height", maxHeight);
-        height = maxHeight;
+
+      if (resize) {
+        if (bestWidth > width) {
+          $tapestry.attr("width", bestWidth);
+          width = bestWidth;
+        }
+
+        if (maxHeight > height) {
+          $tapestry.attr("height", maxHeight);
+          height = maxHeight;
+        }
+      } else if (zoom) {
+        if (bestWidth > width) {
+          zoom = width / bestWidth;
+
+          var mx = width / 2.0;
+          var my = 0;
+
+          $tapestryRoot.attr("transform", "translate(" + mx + "," + my + "),scale(" + zoom + "),translate(-" + mx + ",-" + my + ")");
+        }
       }
 
       var baseXOffset = Math.floor((width - baseWidth) / 2);
-
-
       var parentBoxes = {};
 
       var animateIfNeeded = function(node) {
         var realX = parseInt(node.layout.$sprite.attr("x"));
         var realY = parseInt(node.layout.$sprite.attr("y"));
         if (node.layout.x != realX || node.layout.y != realY) {
-          node.layout.$sprite.
-            velocity({
-              x: node.layout.x,
-              y: node.layout.y
-            }, {
-              duration: 100
-            });
+          if (skipAnimation) {
+            node.layout.$sprite.
+              attr("x", node.layout.x).
+              attr("y", node.layout.y);
+          } else {
+            node.layout.$sprite.
+              velocity({
+                x: node.layout.x,
+                y: node.layout.y
+              }, {
+                duration: 100
+              });
+          }
         }
       }
 
@@ -153,13 +196,13 @@
 
           parentBoxes[node.parent] = parentBox;
 
-          Layout.recomputeEdges(node);
           animateIfNeeded(node);
+          Layout.recomputeEdges(node, skipAnimation);
         }
       }
     },
 
-    recomputeEdges: function(node) {
+    recomputeEdges: function(node, skipAnimation) {
       if (node.leaf) return;
 
       var animateEdgeIfNeeded = function(edge) {
@@ -169,15 +212,24 @@
         var realY2 = parseInt(edge.$sprite.attr("y2"));
 
         if (edge.x1 != realX1 || edge.y1 != realY1 || edge.x2 != realX2 || edge.y2 != realY2) {
-          edge.$sprite.
-            velocity({
+          if (skipAnimation) {
+            edge.$sprite.attr({
               x1: edge.x1,
               y1: edge.y1,
-              x2: edge.x2,
+              x2: edge.y2,
               y2: edge.y2
-            }, {
-              duration: 100
             });
+          } else {
+            edge.$sprite.
+              velocity({
+                x1: edge.x1,
+                y1: edge.y1,
+                x2: edge.x2,
+                y2: edge.y2
+              }, {
+                duration: 100
+              });
+          }
         }
       }
 
@@ -205,7 +257,7 @@
               "class": "edge edge" + node.index + "-" + child
             });
 
-          $tapestry.append($line);
+          appendGraphic($line);
 
           edge = { $sprite: $line };
           node.layout.edges[child] = edge;
@@ -249,7 +301,7 @@
       var middle = Math.floor((width - nodeWidth) / 2);
 
       Layout.$createNode(node, middle, -(nodeHeight + 5));
-      $tapestry.append(node.layout.$sprite);
+      appendGraphic(node.layout.$sprite);
 
       Layout.recompute(tree);
 
@@ -300,13 +352,17 @@
       if (parent) Layout.populateNode(parent);
 
       Layout.$createNode(clone, master.layout.x, master.layout.y);
-      $tapestry.append(clone.layout.$sprite);
+      appendGraphic(clone.layout.$sprite);
 
       Layout.recompute(tree);
 
       console.log("split node into two, " + left + " (new) and " + right);
     }
   };
+
+  function appendGraphic(sprite) {
+    $tapestryRoot.append(sprite);
+  }
 
   function addValue() {
     var number = Math.floor(10000 * Math.random());
@@ -337,13 +393,21 @@
     }
   }
 
+  var running = false;
   function runStep() {
+    if (running) return;
+    running = true;
+    _runMain();
+  }
+
+  function _runMain() {
     $('.cell').removeClass("found").removeClass("target");
 
     if (BPlusTree.next(state)) {
-      setTimeout(runStep, 100);
+      setTimeout(_runMain, 100);
     } else {
       finishCommand();
+      running = false;
     }
   }
 
@@ -353,6 +417,119 @@
       handlers[action].apply(null, args);
     } else {
       console.log("no handler for " + action + "!!");
+    }
+  }
+
+  function save() {
+    var $canvas = $('#tapestry2');
+    $canvas.attr("width", width);
+    $canvas.attr("height", height);
+
+    var ctx = $canvas[0].getContext("2d");
+    var svgString = new XMLSerializer().serializeToString($tapestry[0]);
+
+    var DOMURL = self.URL || self.webkitURL || self;
+    var img = new Image();
+    var svg = new Blob([svgString], {type: "image/svg+xml;charset=utf-8"});
+    var url = DOMURL.createObjectURL(svg);
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+        var png = $canvas[0].toDataURL("image/png");
+        document.querySelector('#png-container').innerHTML = '<img src="'+png+'"/>';
+        DOMURL.revokeObjectURL(png);
+    };
+    img.src = url;
+  }
+
+  function frontLoad(size) {
+    var list = [];
+    while (list.length < size) {
+      list.push(Math.floor(10000 * Math.random()));
+    }
+    frontLoadList(list);
+  }
+
+  function frontLoadList(list) {
+    list = list.sort(function(a,b) { return a - b; });
+
+    tree.nodes = [];
+    tree.cohorts = [];
+
+    while(true) {
+      frontLoadNextCohort(list);
+      list = tree.cohorts[tree.cohorts.length - 1];
+      if (list.length < 2) break;
+    }
+
+    tree.root = tree.nodes.length - 1;
+
+    for(var i = 0; i < tree.nodes.length; i++) {
+      var node = tree.nodes[i];
+      Layout.$createNode(node);
+      appendGraphic(node.layout.$sprite);
+    }
+
+    Layout.recompute(tree, true);
+  }
+
+  function frontLoadNextCohort(list) {
+    var nodeCount = Math.ceil(list.length / tree.fanout);
+    var perNode = Math.floor(list.length / nodeCount);
+    var remaining = list.length % nodeCount;
+
+    function smallestKey(node) {
+      if (!node) return null;
+      if (node.leaf) return node.children[0].key;
+      return smallestKey(tree.nodes[node.children[0].value]);
+    }
+
+    var n = perNode;
+    if (remaining > 0) {
+      remaining -= 1;
+      n += 1;
+    }
+
+    var cohort = tree.cohorts.length;
+
+    var node = { leaf: (cohort == 0), cohort: cohort, index: tree.nodes.length, children: [] };
+
+    tree.nodes.push(node);
+    tree.cohorts[cohort] = [ node.index ];
+
+    for(var i = 0; i < list.length; i++) {
+      n -= 1;
+
+      var value = list[i];
+      var node = tree.nodes[tree.nodes.length-1];
+      var node2 = n > 0 ? tree.nodes[list[i+1]] : null;
+
+      var key = node.leaf ? value : smallestKey(node2);
+      node.children.push({key: key, value: value});
+
+      if (!node.leaf)
+        tree.nodes[value].parent = node.index;
+
+      if (n < 1 && i+1 < list.length) {
+        n = perNode;
+
+        if (remaining > 0) {
+          remaining -= 1;
+          n += 1;
+        }
+
+        var newNode = {
+          leaf: node.leaf,
+          cohort: cohort,
+          index: tree.nodes.length,
+          children: [],
+          prev: node.index
+        };
+
+        node.next = newNode.index;
+
+        tree.nodes.push(newNode);
+        tree.cohorts[cohort].push(newNode.index);
+      }
     }
   }
 </script>
@@ -395,6 +572,14 @@
     stroke: #aaa;
     stroke-width: 1px;
   }
+
+  .svg-container {
+    padding-top: 2em;
+  }
+
+  .svg-container > svg {
+    border: 1px solid #ccc;
+  }
 </style>
 <body>
 <p style="position: fixed;">
@@ -403,19 +588,31 @@
   <button onclick="nextStep()" id="nextStep" style="display: none;">Next step</button>
   <span id="ticker"></span>
 </p>
-<p>
+<div class="svg-container">
   <svg width="960" height="500" id="tapestry">
+    <g id="tapestry-root">
+    </g>
   </svg>
-</p>
+</div>
+<!--
+<p><button onclick="save()">Save image</button></p>
+<div id="png-container"></div>
+<canvas id="tapestry2"></canvas>
+-->
 </body>
 <script>
   var $tapestry = $("#tapestry");
+  $tapestry.attr("width", $('body').width());
+
+  var $tapestryRoot = $("#tapestry-root");
   var width = $tapestry.attr("width");
   var height = $tapestry.attr("height");
-  var padding = 24;
+  var padding = 12;
   var cellWidth = 12;
   var cellHeight = 24;
   var nodeWidth = tree.fanout * cellWidth;
   var nodeHeight = cellHeight;
+
+  frontLoad(81);
 </script>
 </html>
