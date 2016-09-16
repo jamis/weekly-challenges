@@ -86,6 +86,30 @@
     }
   }
 
+  // --------------------------------------
+  // "quick search" algorithm state machine
+  // --------------------------------------
+
+  function _quickSearch__start(state) {
+    // suppress callbacks during the search
+    var savedCallback = state.callback;
+    var savedAfterSearch = state.afterSearch;
+
+    state.callback = function() { };
+    state.afterSearch = null;
+
+    state.action = _binarySearch__start;
+
+    while (BPlusTree.next(state));
+
+    state.action = savedAfterSearch;
+    state.callback = savedCallback;
+
+    state.callback("search:found", state.current, state.found, state.lo);
+
+    return true;
+  }
+
   // --------------------------------
   // "insert" algorithm state machine
   // --------------------------------
@@ -116,7 +140,7 @@
     } else {
       state.current = state.tree.root;
       state.callback('node:highlight', state.current);
-      state.action = _binarySearch__start;
+      state.action = _quickSearch__start;
 
       var root = state.tree.nodes[state.tree.root];
       if (root.leaf) {
@@ -135,7 +159,7 @@
     var child = state.tree.nodes[value];
 
     state.current = value;
-    state.action = _binarySearch__start;
+    state.action = _quickSearch__start;
     state.callback('node:highlight', state.current);
 
     if (child.leaf) {

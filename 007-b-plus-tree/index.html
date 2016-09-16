@@ -6,7 +6,7 @@
 <script src="./vendor/velocity.min.js"></script>
 <script>
   var BPlusTree = exports.BPlusTree;
-  var tree = BPlusTree.make(11);
+  var tree = BPlusTree.make(5);
   var state = null;
 
   var SVG = {
@@ -272,14 +272,6 @@
       console.log("inserted entry at " + position + " of node " + index);
     },
 
-    "search:range": function(index, lo, hi) {
-      console.log("searching range of node #" + index + " from " + lo + "..." + hi);
-    },
-
-    "search:mid": function(index, mid) {
-      console.log("midpoint is at " + mid);
-    },
-
     "search:found": function(index, position, last) {
       if (position) {
         console.log("found goal at " + position);
@@ -318,15 +310,29 @@
 
     $('#addValue').hide();
     $('#nextStep').show();
+    $('#runStep').show();
+  }
+
+  function finishCommand() {
+    $('#addValue').show();
+    $('#nextStep').hide();
+    $('#runStep').hide();
+    $('#ticker').html("");
+
+    $('.node.highlight').removeClass("highlight");
   }
 
   function nextStep() {
     if (!BPlusTree.next(state)) {
-      $('#addValue').show();
-      $('#nextStep').hide();
-      $('#ticker').html("");
+      finishCommand();
+    }
+  }
 
-      $('.node.highlight').removeClass("highlight");
+  function runStep() {
+    if (BPlusTree.next(state)) {
+      setTimeout(runStep, 100);
+    } else {
+      finishCommand();
     }
   }
 
@@ -372,8 +378,9 @@
   }
 </style>
 <body>
-<p>
+<p style="position: fixed;">
   <button onclick="addValue()" id="addValue">Add value</button>
+  <button onclick="runStep()" id="runStep" style="display: none;">Run</button>
   <button onclick="nextStep()" id="nextStep" style="display: none;">Next step</button>
   <span id="ticker"></span>
 </p>
