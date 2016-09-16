@@ -273,6 +273,10 @@
     },
 
     "search:found": function(index, position, last) {
+      var where = position || last;
+      var $cell = $('#node' + index + " .cell" + where);
+      $cell.addClass("found");
+
       if (position) {
         console.log("found goal at " + position);
       } else {
@@ -281,6 +285,9 @@
     },
 
     "split:mid": function(index, splitAt) {
+      var $cell = $('#node' + index + " .cell" + splitAt);
+      $cell.addClass("target");
+
       console.log("preparing to split " + index + " at " + splitAt);
     },
 
@@ -323,12 +330,16 @@
   }
 
   function nextStep() {
+    $('.cell').removeClass("found").removeClass("target");
+
     if (!BPlusTree.next(state)) {
       finishCommand();
     }
   }
 
   function runStep() {
+    $('.cell').removeClass("found").removeClass("target");
+
     if (BPlusTree.next(state)) {
       setTimeout(runStep, 100);
     } else {
@@ -352,6 +363,14 @@
 
   .node .cell.active {
     fill: #fff;
+  }
+
+  .node .cell.active.found {
+    fill: #ffa;
+  }
+
+  .node .cell.active.target {
+    fill: #faa;
   }
 
   .node .border {
