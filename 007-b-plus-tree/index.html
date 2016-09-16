@@ -6,7 +6,7 @@
 <script src="./vendor/velocity.min.js"></script>
 <script>
   var BPlusTree = exports.BPlusTree;
-  var tree = BPlusTree.make(3);
+  var tree = BPlusTree.make(11);
   var state = null;
 
   var SVG = {
@@ -97,7 +97,21 @@
     recompute: function(tree) {
       var count = tree.cohorts[0].length;
       var baseWidth = count * nodeWidth + (count - 1) * padding;
+
+      var bestWidth = baseWidth + padding*2;
+      if (bestWidth > width) {
+        $tapestry.attr("width", bestWidth);
+        width = bestWidth;
+      }
+
+      var maxHeight = (tree.cohorts.length + 1) * (nodeHeight + 2 * padding);
+      if (maxHeight > height) {
+        $tapestry.attr("height", maxHeight);
+        height = maxHeight;
+      }
+
       var baseXOffset = Math.floor((width - baseWidth) / 2);
+
 
       var parentBoxes = {};
 
