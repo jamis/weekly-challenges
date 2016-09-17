@@ -14,6 +14,7 @@ The challenges are:
 4. Drawing Lines -- https://medium.com/@jamis/weekly-programming-challenge-4-7fe42f28d5d4
 5. Binary Heap and Priority Queue -- https://medium.com/@jamis/weekly-programming-challenge-5-e7677458f646
 6. Perlin Noise -- https://medium.com/@jamis/weekly-programming-challenge-6-83fa37e9e737
+7. B+ Tree -- https://medium.com/@jamis/weekly-programming-challenge-7-286640364537
 
 
 ## LICENSE

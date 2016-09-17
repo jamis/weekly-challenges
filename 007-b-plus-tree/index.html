@@ -6,7 +6,7 @@
 <script src="./vendor/velocity.min.js"></script>
 <script>
   var BPlusTree = exports.BPlusTree;
-  var tree = BPlusTree.make(2);
+  var tree = BPlusTree.make(5);
   var state = null;
 
   var resize = false;
@@ -636,6 +636,6 @@
   var nodeWidth = tree.fanout * cellWidth;
   var nodeHeight = cellHeight;
 
-  frontLoad(120);
+  frontLoad(28);
 </script>
 </html>
