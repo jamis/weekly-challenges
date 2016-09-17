@@ -6,7 +6,7 @@
 <script src="./vendor/velocity.min.js"></script>
 <script>
   var BPlusTree = exports.BPlusTree;
-  var tree = BPlusTree.make(3);
+  var tree = BPlusTree.make(2);
   var state = null;
 
   var resize = false;
@@ -42,7 +42,7 @@
       var $node = $(this).closest('.node');
 
       var nodeIndex = $node.data('n');
-      var cellIndex = $(this).data('n');
+      var cellIndex = $(this).find('.cell').data('n');
 
       var node = tree.nodes[nodeIndex];
 
@@ -50,6 +50,14 @@
         var child = node.children[cellIndex];
         console.log("clicked: " + child.value);
       }
+    },
+
+    cellEnter: function() {
+      $(this).find('.cell').addClass('highlight');
+    },
+
+    cellExit: function() {
+      $(this).find('.cell').removeClass('highlight');
     },
 
     $createNode: function(node, initx, inity) {
@@ -62,18 +70,24 @@
       });
 
       for(var i = 0; i < tree.fanout; i++) {
+        var $svg = SVG.$el("svg").attr({
+          "x"     : 2 + i * cellWidth,
+          "y"     : 2
+        });
+        $group.append($svg);
+
         var $cell = SVG.$el("rect").attr({
           "class" : "cell cell" + i,
-          "x"     : 2 + i * cellWidth,
-          "y"     : 2,
+          "x"     : 0,
+          "y"     : 0,
           "width" : cellWidth,
           "height": cellHeight,
           "data-n": i
         });
-        $group.append($cell);
+        $svg.append($cell);
 
-        var tx = i * cellWidth + cellWidth / 2; 
-        var ty = 2 + cellHeight / 2;
+        var tx = cellWidth / 2 - 2; 
+        var ty = cellHeight / 2;
 
         var $text = SVG.$el('text').attr({
             "class"      : "label label" + i,
@@ -85,11 +99,12 @@
             "font-size"  : 7,
             "transform"  : "rotate(90," + tx + "," + ty + ")"
           });
-        $group.append($text);
+        $svg.append($text);
 
         if (node.leaf) {
-          $cell.click(Layout.cellClicked);
-          $text.click(Layout.cellClicked);
+          $svg.click(Layout.cellClicked);
+          $svg.mouseenter(Layout.cellEnter);
+          $svg.mouseleave(Layout.cellExit);
         }
 
         if (i > 0) {
@@ -538,6 +553,10 @@
     fill: #ccc;
   }
 
+  .node .label {
+    cursor: default;
+  }
+
   .node .cell.active {
     fill: #fff;
   }
@@ -547,6 +566,10 @@
   }
 
   .node .cell.active.target {
+    fill: #faa;
+  }
+
+  .node .cell.active.highlight {
     fill: #faa;
   }
 
@@ -613,6 +636,6 @@
   var nodeWidth = tree.fanout * cellWidth;
   var nodeHeight = cellHeight;
 
-  frontLoad(81);
+  frontLoad(120);
 </script>
 </html>
