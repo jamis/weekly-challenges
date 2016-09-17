@@ -18,7 +18,7 @@
         tree: tree,
         key: key,
         callback: callback,
-        action: _find__start }
+        action: _find__start };
     },
 
     insert: function(tree, key, value, callback) {
@@ -27,7 +27,15 @@
         key: key,
         value: value,
         callback: callback,
-        action: _insert__start }
+        action: _insert__start };
+    },
+
+    remove: function(tree, key, callback) {
+      return {
+        tree: tree,
+        key: key,
+        callback: callback,
+        action: _remove__start };
     },
 
     // ------------------------
@@ -288,6 +296,146 @@
     state.callback('node:root', state.tree.root);
 
     return false;
+  }
+
+  // ---------------------------------------
+  // "remove" algorithm state machine
+  // ---------------------------------------
+
+  // 1. descend the tree, looking for the node that contains the key
+  // 2. if not found -- finish
+  // 3. otherwise, remove the value from the node
+  // 4. if node is more than half full -- finish
+  // 5. if node + neighboring sibling is overfull -- finish
+  // 6. otherwise, merge node + neighboring sibling
+  // 7. repeat from 4 with parent node
+  function _remove__start(state) {
+    if (!state.tree.root) {
+      return false;
+    }
+
+    state.current = state.tree.root;
+    state.callback('node:highlight', state.current);
+    state.action = _quickSearch__start;
+
+    var root = state.tree.nodes[state.tree.root];
+    if (root.leaf) {
+      state.afterSearch = _remove__afterLeafSearch;
+    } else {
+      state.afterSearch = _remove__afterNodeSearch;
+    }
+
+    return true;
+  }
+
+  function _remove__afterNodeSearch(state) {
+    var node = state.tree.nodes[state.current];
+    var value = node.children[state.found].value;
+    var child = state.tree.nodes[value];
+
+    state.current = value;
+    state.action = _quickSearch__start;
+    state.callback('node:highlight', state.current);
+
+    if (child.leaf) {
+      state.afterSearch = _remove__afterLeafSearch;
+    } else {
+      state.afterSearch = _remove__afterNodeSearch;
+    }
+
+    return true;
+  }
+
+  function _remove__afterLeafSearch(state) {
+    // state.found must be non-null. If it is null, then the key
+    // was not found, and the operation finishes.
+
+    if (state.found == null) {
+      return false;
+    }
+
+    var node = state.tree.nodes[state.current];
+    var at = state.found;
+
+    state.callback('cell:highlight', state.current, at);
+
+    state.action = _remove__removeCell;
+    return true;
+  }
+
+  function _remove__removeCell(state) {
+    var node = state.tree.nodes[state.current];
+    node.children.splice(state.found, 1);
+    state.callback('cell:remove', state.current, state.found);
+
+    if (node.parent && node.children.length <= tree.fanout / 2) {
+      var candidates = [];
+      var parent = tree.nodes[node.parent];
+
+      for(var i = 0; i < parent.children.length; i++) {
+        if (parent.children[i].value == node.index) {
+          if(i > 0) candidates.push(parent.children[i-1]);
+          if(i+1 < parent.children.length) candidates.push(parent.children[i+1]);
+          break;
+        }
+      }
+
+      if (candidates.length > 0) {
+        state.siblings = candidates;
+        state.action = _remove__checkSiblings;
+        return true;
+      }
+    } else if (!node.parent && node.children.length < 2) {
+      // FIXME: decrease height by removing root node and making
+      // it's sole child the new root.
+    }
+
+    return false;
+  }
+
+  function _remove__checkSiblings(state) {
+    var candidateIndex = state.candidates.pop();
+    var node = tree.nodes[state.current];
+    var candidate = tree.nodes[candidateIndex];
+
+    state.callback('merge:consider', candidateIndex);
+
+    if (node.children.length + candidate.children.length <= tree.fanout) {
+      state.action = _remove__mergeNodes;
+      state.target = candidateIndex;
+      return true
+
+    } else if (state.candidates.length > 0) {
+      state.action = _remove__checkSiblings;
+      return true;
+
+    } else {
+      return false;
+    }
+  }
+
+  function _remove__mergeNodes(state) {
+    var target = tree.nodes[state.target];
+    var current = tree.nodes[state.current];
+    var parent = tree.nodes[target.parent];
+
+    state.callback('node:cleanup', state.current);
+
+    target.children += current.children;
+
+    for(var i = 0; i < parent.children.length; i++) {
+      if (parent.children[i].value == state.current) {
+        state.found = i;
+        break;
+      }
+    }
+
+    state.current = target.parent;
+    state.action = _remove__removeCell;
+
+    state.callback('merge:nodes', state.target, state.current);
+
+    return true;
   }
 
   // ---------------------------------------
