@@ -7,6 +7,7 @@ data Token = LParen
            | Minus
            | Times
            | Divide
+           | Exp
            | Number Int deriving (Show)
 
 data AST = Unary Token AST
@@ -24,6 +25,7 @@ tokenize ('+':cs) = Plus:tokenize cs
 tokenize ('-':cs) = Minus:tokenize cs
 tokenize ('*':cs) = Times:tokenize cs
 tokenize ('/':cs) = Divide:tokenize cs
+tokenize ('^':cs) = Exp:tokenize cs
 tokenize (c:cs)
   | isDigit c = (Number $ digitToInt c):tokenize cs
   | otherwise = error [c]
@@ -45,10 +47,16 @@ expression tokens =
 
 term :: [Token] -> State
 term tokens =
-  case factor tokens of
+  case expterm tokens of
     (left, (Times:tokens))  -> binary left Times (term tokens)
     (left, (Divide:tokens)) -> binary left Divide (term tokens)
     state                   -> state
+
+expterm :: [Token] -> State
+expterm tokens =
+  case factor tokens of
+    (left, (Exp:tokens)) -> binary left Exp (expterm tokens)
+    state                -> state
 
 factor :: [Token] -> State
 factor (Minus:tokens) =
@@ -61,11 +69,12 @@ factor (LParen:tokens) =
 factor ((Number n):tokens) = (Literal n, tokens)
 factor tokens = error "invalid token"
 
-evaluate :: (Fractional a) => AST -> a
+evaluate :: (Floating a) => AST -> a
 evaluate (Binary left Plus right) = (evaluate left) + (evaluate right)
 evaluate (Binary left Minus right) = (evaluate left) - (evaluate right)
 evaluate (Binary left Times right) = (evaluate left) * (evaluate right)
 evaluate (Binary left Divide right) = (evaluate left) / (evaluate right)
+evaluate (Binary left Exp right) = (evaluate left) ** (evaluate right)
 evaluate (Unary Minus expr) = - (evaluate expr)
 evaluate (Literal n) = fromIntegral(n)
 
