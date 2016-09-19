@@ -8,11 +8,11 @@ data Token = LParen
            | Times
            | Divide
            | Exp
-           | Number Int deriving (Show)
+           | Number Float deriving (Show)
 
 data AST = Unary Token AST
          | Binary AST Token AST
-         | Literal Int deriving (Show)
+         | Literal Float deriving (Show)
 
 type State = (AST, [Token])
 
@@ -27,8 +27,15 @@ tokenize ('*':cs) = Times:tokenize cs
 tokenize ('/':cs) = Divide:tokenize cs
 tokenize ('^':cs) = Exp:tokenize cs
 tokenize (c:cs)
-  | isDigit c = (Number $ digitToInt c):tokenize cs
+  | isDigit c =
+      let (num, remainder) = parseNum cs [c]
+      in (Number num):tokenize remainder
   | otherwise = error [c]
+
+parseNum :: String -> String -> (Float, String)
+parseNum (c:cs) agg
+  | isDigit c || c == '.' = parseNum cs (c:agg)
+parseNum list agg = (read $ reverse agg, list)
 
 parse :: [Token] -> AST
 parse tokens =
@@ -69,14 +76,14 @@ factor (LParen:tokens) =
 factor ((Number n):tokens) = (Literal n, tokens)
 factor tokens = error "invalid token"
 
-evaluate :: (Floating a) => AST -> a
+evaluate :: AST -> Float
 evaluate (Binary left Plus right) = (evaluate left) + (evaluate right)
 evaluate (Binary left Minus right) = (evaluate left) - (evaluate right)
 evaluate (Binary left Times right) = (evaluate left) * (evaluate right)
 evaluate (Binary left Divide right) = (evaluate left) / (evaluate right)
 evaluate (Binary left Exp right) = (evaluate left) ** (evaluate right)
 evaluate (Unary Minus expr) = - (evaluate expr)
-evaluate (Literal n) = fromIntegral(n)
+evaluate (Literal n) = n
 
 main :: IO ()
 main = getArgs >>= print . evaluate . parse . tokenize . head
