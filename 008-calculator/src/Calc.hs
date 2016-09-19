@@ -12,6 +12,7 @@ data Token = LParen
            | Divide
            | Exp
            | Assn
+           | Semi
            | Identifier String
            | Number Float deriving (Show)
 
@@ -25,6 +26,7 @@ type State = (AST, [Token])
 tokenize :: String -> [Token]
 tokenize "" = []
 tokenize (' ':cs) = tokenize cs
+tokenize (';':cs) = Semi:tokenize cs
 tokenize ('=':cs) = Assn:tokenize cs
 tokenize ('(':cs) = LParen:tokenize cs
 tokenize (')':cs) = RParen:tokenize cs
@@ -54,11 +56,17 @@ parseIdent list agg = (reverse agg, list)
 
 parse :: [Token] -> AST
 parse tokens =
-  case statement tokens of (ast, []) -> ast
-                           (ast, ts) -> error "trailing tokens"
+  case statements tokens of (ast, []) -> ast
+                            (ast, ts) -> error "trailing tokens"
 
 binary :: AST -> Token -> State -> State
 binary left op (right, tokens) = (Binary left op right, tokens)
+
+statements :: [Token] -> State
+statements tokens =
+  case statement tokens of
+    (left, (Semi:tokens)) -> binary left Semi (statements tokens)
+    state                 -> state
 
 statement :: [Token] -> State
 statement tokens =
@@ -122,6 +130,7 @@ evaluate' (Binary left Minus right) vars = binaryEval left (-) right vars
 evaluate' (Binary left Times right) vars = binaryEval left (*) right vars
 evaluate' (Binary left Divide right) vars = binaryEval left (/) right vars
 evaluate' (Binary left Exp right) vars = binaryEval left (**) right vars
+evaluate' (Binary left Semi right) vars = binaryEval left (\x y -> y) right vars
 evaluate' (Unary Minus expr) vars =
   let (result, vars') = (evaluate' expr vars)
   in (-result, vars')
