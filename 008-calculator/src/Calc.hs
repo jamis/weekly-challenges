@@ -1,6 +1,9 @@
 import System.Environment
 import Data.Char
 
+import Data.Map (Map)
+import qualified Data.Map as Map
+
 data Token = LParen
            | RParen
            | Plus
@@ -8,10 +11,13 @@ data Token = LParen
            | Times
            | Divide
            | Exp
+           | Assn
+           | Identifier String
            | Number Float deriving (Show)
 
 data AST = Unary Token AST
          | Binary AST Token AST
+         | Variable String
          | Literal Float deriving (Show)
 
 type State = (AST, [Token])
@@ -19,6 +25,7 @@ type State = (AST, [Token])
 tokenize :: String -> [Token]
 tokenize "" = []
 tokenize (' ':cs) = tokenize cs
+tokenize ('=':cs) = Assn:tokenize cs
 tokenize ('(':cs) = LParen:tokenize cs
 tokenize (')':cs) = RParen:tokenize cs
 tokenize ('+':cs) = Plus:tokenize cs
@@ -30,6 +37,9 @@ tokenize (c:cs)
   | isDigit c =
       let (num, remainder) = parseNum cs [c]
       in (Number num):tokenize remainder
+  | isAlpha c =
+      let (ident, remainder) = parseIdent cs [c]
+      in (Identifier ident):tokenize remainder
   | otherwise = error [c]
 
 parseNum :: String -> String -> (Float, String)
@@ -37,13 +47,24 @@ parseNum (c:cs) agg
   | isDigit c || c == '.' = parseNum cs (c:agg)
 parseNum list agg = (read $ reverse agg, list)
 
+parseIdent :: String -> String -> (String, String)
+parseIdent (c:cs) agg
+  | isAlpha c = parseIdent cs (c:agg)
+parseIdent list agg = (reverse agg, list)
+
 parse :: [Token] -> AST
 parse tokens =
-  case expression tokens of (ast, []) -> ast
-                            (ast, ts) -> error "trailing tokens"
+  case statement tokens of (ast, []) -> ast
+                           (ast, ts) -> error "trailing tokens"
 
 binary :: AST -> Token -> State -> State
 binary left op (right, tokens) = (Binary left op right, tokens)
+
+statement :: [Token] -> State
+statement tokens =
+  case expression tokens of
+    (left, (Assn:tokens)) -> binary left Assn (statement tokens)
+    state                 -> state
 
 expression :: [Token] -> State
 expression tokens =
@@ -74,16 +95,41 @@ factor (LParen:tokens) =
       (RParen:tokens'') = tokens'
   in (ast, tokens'')
 factor ((Number n):tokens) = (Literal n, tokens)
+factor ((Identifier id):tokens) = (Variable id, tokens)
 factor tokens = error "invalid token"
 
 evaluate :: AST -> Float
-evaluate (Binary left Plus right) = (evaluate left) + (evaluate right)
-evaluate (Binary left Minus right) = (evaluate left) - (evaluate right)
-evaluate (Binary left Times right) = (evaluate left) * (evaluate right)
-evaluate (Binary left Divide right) = (evaluate left) / (evaluate right)
-evaluate (Binary left Exp right) = (evaluate left) ** (evaluate right)
-evaluate (Unary Minus expr) = - (evaluate expr)
-evaluate (Literal n) = n
+evaluate ast =
+  let (result, vars) = evaluate' ast Map.empty
+  in result
+
+type VarMap = Map String Float
+
+binaryEval :: AST -> (Float -> Float -> Float) -> AST -> VarMap -> (Float, VarMap)
+binaryEval left fn right vars =
+  let (leftResult, vars') = evaluate' left vars
+      (rightResult, vars'') = evaluate' right vars'
+  in (fn leftResult rightResult, vars'')
+
+evaluate' :: AST -> VarMap -> (Float, VarMap)
+evaluate' (Binary (Variable id) Assn right) vars =
+  let (result, vars') = (evaluate' right vars)
+      vars'' = Map.insert id result vars'
+  in (result, vars'')
+evaluate' (Binary left Assn right) vars = error "lhs is not a variable"
+evaluate' (Binary left Plus right) vars = binaryEval left (+) right vars
+evaluate' (Binary left Minus right) vars = binaryEval left (-) right vars
+evaluate' (Binary left Times right) vars = binaryEval left (*) right vars
+evaluate' (Binary left Divide right) vars = binaryEval left (/) right vars
+evaluate' (Binary left Exp right) vars = binaryEval left (**) right vars
+evaluate' (Unary Minus expr) vars =
+  let (result, vars') = (evaluate' expr vars)
+  in (-result, vars')
+evaluate' (Variable id) vars =
+  case Map.lookup id vars of
+    Nothing -> error "undefined variable"
+    Just x -> (x, vars)
+evaluate' (Literal n) vars = (n, vars)
 
 main :: IO ()
 main = getArgs >>= print . evaluate . parse . tokenize . head
