@@ -11,11 +11,11 @@
 		1C0D72241D99988400599A69 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72231D99988400599A69 /* ViewController.swift */; };
 		1C0D72261D99988400599A69 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1C0D72251D99988400599A69 /* Assets.xcassets */; };
 		1C0D72291D99988400599A69 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C0D72271D99988400599A69 /* Main.storyboard */; };
-		1C0D72331D99990200599A69 /* ControlPointView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72301D99990200599A69 /* ControlPointView.swift */; };
-		1C0D72341D99990200599A69 /* CurveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72311D99990200599A69 /* CurveViewController.swift */; };
-		1C0D72351D99990200599A69 /* QuadraticCurveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72321D99990200599A69 /* QuadraticCurveView.swift */; };
 		1C0D72391D99C07000599A69 /* CubicCurveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72381D99C07000599A69 /* CubicCurveView.swift */; };
 		1C0D723B1D99C2D000599A69 /* CurveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D723A1D99C2D000599A69 /* CurveView.swift */; };
+		1CB8F7791D99CC9F008FC2AE /* ControlPointView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8F7761D99CC9F008FC2AE /* ControlPointView.swift */; };
+		1CB8F77A1D99CC9F008FC2AE /* CurveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8F7771D99CC9F008FC2AE /* CurveViewController.swift */; };
+		1CB8F77B1D99CC9F008FC2AE /* QuadraticCurveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8F7781D99CC9F008FC2AE /* QuadraticCurveView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,11 +25,11 @@
 		1C0D72251D99988400599A69 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1C0D72281D99988400599A69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1C0D722A1D99988400599A69 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1C0D72301D99990200599A69 /* ControlPointView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ControlPointView.swift; path = ../../../../tmp/ControlPointView.swift; sourceTree = "<group>"; };
-		1C0D72311D99990200599A69 /* CurveViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CurveViewController.swift; path = ../../../../tmp/CurveViewController.swift; sourceTree = "<group>"; };
-		1C0D72321D99990200599A69 /* QuadraticCurveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QuadraticCurveView.swift; path = ../../../../tmp/QuadraticCurveView.swift; sourceTree = "<group>"; };
 		1C0D72381D99C07000599A69 /* CubicCurveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CubicCurveView.swift; sourceTree = "<group>"; };
 		1C0D723A1D99C2D000599A69 /* CurveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurveView.swift; sourceTree = "<group>"; };
+		1CB8F7761D99CC9F008FC2AE /* ControlPointView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlPointView.swift; sourceTree = "<group>"; };
+		1CB8F7771D99CC9F008FC2AE /* CurveViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurveViewController.swift; sourceTree = "<group>"; };
+		1CB8F7781D99CC9F008FC2AE /* QuadraticCurveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuadraticCurveView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,9 +62,9 @@
 		1C0D72201D99988400599A69 /* BezierDemo */ = {
 			isa = PBXGroup;
 			children = (
-				1C0D72301D99990200599A69 /* ControlPointView.swift */,
-				1C0D72311D99990200599A69 /* CurveViewController.swift */,
-				1C0D72321D99990200599A69 /* QuadraticCurveView.swift */,
+				1CB8F7761D99CC9F008FC2AE /* ControlPointView.swift */,
+				1CB8F7771D99CC9F008FC2AE /* CurveViewController.swift */,
+				1CB8F7781D99CC9F008FC2AE /* QuadraticCurveView.swift */,
 				1C0D723A1D99C2D000599A69 /* CurveView.swift */,
 				1C0D72381D99C07000599A69 /* CubicCurveView.swift */,
 				1C0D72211D99988400599A69 /* AppDelegate.swift */,
@@ -147,12 +147,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C0D72341D99990200599A69 /* CurveViewController.swift in Sources */,
+				1CB8F77A1D99CC9F008FC2AE /* CurveViewController.swift in Sources */,
 				1C0D72241D99988400599A69 /* ViewController.swift in Sources */,
-				1C0D72351D99990200599A69 /* QuadraticCurveView.swift in Sources */,
+				1CB8F7791D99CC9F008FC2AE /* ControlPointView.swift in Sources */,
 				1C0D723B1D99C2D000599A69 /* CurveView.swift in Sources */,
+				1CB8F77B1D99CC9F008FC2AE /* QuadraticCurveView.swift in Sources */,
 				1C0D72391D99C07000599A69 /* CubicCurveView.swift in Sources */,
-				1C0D72331D99990200599A69 /* ControlPointView.swift in Sources */,
 				1C0D72221D99988400599A69 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -306,6 +306,7 @@
 				1C0D722F1D99988400599A69 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
