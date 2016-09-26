@@ -29,7 +29,7 @@ class CurveView : NSView, ControlPointDelegate {
             let c = points.map { point in point.center }
             
             path.move(to: c[0])
-            for t: CGFloat in stride(from: 0.1, to: 0.99, by: 0.02) {
+            for t: CGFloat in stride(from: 0.02, to: 0.999, by: 0.02) {
                 let point = evaluate(at: t, points: c)
                 path.line(to: point)
             }
