@@ -1,0 +1,313 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1C0D72221D99988400599A69 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72211D99988400599A69 /* AppDelegate.swift */; };
+		1C0D72241D99988400599A69 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72231D99988400599A69 /* ViewController.swift */; };
+		1C0D72261D99988400599A69 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1C0D72251D99988400599A69 /* Assets.xcassets */; };
+		1C0D72291D99988400599A69 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C0D72271D99988400599A69 /* Main.storyboard */; };
+		1C0D72331D99990200599A69 /* ControlPointView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72301D99990200599A69 /* ControlPointView.swift */; };
+		1C0D72341D99990200599A69 /* CurveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72311D99990200599A69 /* CurveViewController.swift */; };
+		1C0D72351D99990200599A69 /* QuadraticCurveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72321D99990200599A69 /* QuadraticCurveView.swift */; };
+		1C0D72391D99C07000599A69 /* CubicCurveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72381D99C07000599A69 /* CubicCurveView.swift */; };
+		1C0D723B1D99C2D000599A69 /* CurveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D723A1D99C2D000599A69 /* CurveView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1C0D721E1D99988400599A69 /* BezierDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BezierDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C0D72211D99988400599A69 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		1C0D72231D99988400599A69 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		1C0D72251D99988400599A69 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1C0D72281D99988400599A69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		1C0D722A1D99988400599A69 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1C0D72301D99990200599A69 /* ControlPointView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ControlPointView.swift; path = ../../../../tmp/ControlPointView.swift; sourceTree = "<group>"; };
+		1C0D72311D99990200599A69 /* CurveViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CurveViewController.swift; path = ../../../../tmp/CurveViewController.swift; sourceTree = "<group>"; };
+		1C0D72321D99990200599A69 /* QuadraticCurveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QuadraticCurveView.swift; path = ../../../../tmp/QuadraticCurveView.swift; sourceTree = "<group>"; };
+		1C0D72381D99C07000599A69 /* CubicCurveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CubicCurveView.swift; sourceTree = "<group>"; };
+		1C0D723A1D99C2D000599A69 /* CurveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurveView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1C0D721B1D99988400599A69 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1C0D72151D99988400599A69 = {
+			isa = PBXGroup;
+			children = (
+				1C0D72201D99988400599A69 /* BezierDemo */,
+				1C0D721F1D99988400599A69 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1C0D721F1D99988400599A69 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1C0D721E1D99988400599A69 /* BezierDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1C0D72201D99988400599A69 /* BezierDemo */ = {
+			isa = PBXGroup;
+			children = (
+				1C0D72301D99990200599A69 /* ControlPointView.swift */,
+				1C0D72311D99990200599A69 /* CurveViewController.swift */,
+				1C0D72321D99990200599A69 /* QuadraticCurveView.swift */,
+				1C0D723A1D99C2D000599A69 /* CurveView.swift */,
+				1C0D72381D99C07000599A69 /* CubicCurveView.swift */,
+				1C0D72211D99988400599A69 /* AppDelegate.swift */,
+				1C0D72231D99988400599A69 /* ViewController.swift */,
+				1C0D72251D99988400599A69 /* Assets.xcassets */,
+				1C0D72271D99988400599A69 /* Main.storyboard */,
+				1C0D722A1D99988400599A69 /* Info.plist */,
+			);
+			path = BezierDemo;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1C0D721D1D99988400599A69 /* BezierDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C0D722D1D99988400599A69 /* Build configuration list for PBXNativeTarget "BezierDemo" */;
+			buildPhases = (
+				1C0D721A1D99988400599A69 /* Sources */,
+				1C0D721B1D99988400599A69 /* Frameworks */,
+				1C0D721C1D99988400599A69 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BezierDemo;
+			productName = BezierDemo;
+			productReference = 1C0D721E1D99988400599A69 /* BezierDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1C0D72161D99988400599A69 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0800;
+				LastUpgradeCheck = 0800;
+				ORGANIZATIONNAME = "Jamis Buck";
+				TargetAttributes = {
+					1C0D721D1D99988400599A69 = {
+						CreatedOnToolsVersion = 8.0;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 1C0D72191D99988400599A69 /* Build configuration list for PBXProject "BezierDemo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 1C0D72151D99988400599A69;
+			productRefGroup = 1C0D721F1D99988400599A69 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1C0D721D1D99988400599A69 /* BezierDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1C0D721C1D99988400599A69 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C0D72261D99988400599A69 /* Assets.xcassets in Resources */,
+				1C0D72291D99988400599A69 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1C0D721A1D99988400599A69 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C0D72341D99990200599A69 /* CurveViewController.swift in Sources */,
+				1C0D72241D99988400599A69 /* ViewController.swift in Sources */,
+				1C0D72351D99990200599A69 /* QuadraticCurveView.swift in Sources */,
+				1C0D723B1D99C2D000599A69 /* CurveView.swift in Sources */,
+				1C0D72391D99C07000599A69 /* CubicCurveView.swift in Sources */,
+				1C0D72331D99990200599A69 /* ControlPointView.swift in Sources */,
+				1C0D72221D99988400599A69 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		1C0D72271D99988400599A69 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1C0D72281D99988400599A69 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		1C0D722B1D99988400599A69 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		1C0D722C1D99988400599A69 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+			};
+			name = Release;
+		};
+		1C0D722E1D99988400599A69 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = BezierDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.jamisbuck.BezierDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		1C0D722F1D99988400599A69 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = BezierDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.jamisbuck.BezierDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1C0D72191D99988400599A69 /* Build configuration list for PBXProject "BezierDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C0D722B1D99988400599A69 /* Debug */,
+				1C0D722C1D99988400599A69 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1C0D722D1D99988400599A69 /* Build configuration list for PBXNativeTarget "BezierDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C0D722E1D99988400599A69 /* Debug */,
+				1C0D722F1D99988400599A69 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1C0D72161D99988400599A69 /* Project object */;
+}
