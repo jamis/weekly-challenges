@@ -22,6 +22,41 @@ class CurveView : NSView, ControlPointDelegate {
         preconditionFailure("subclasses must define #evaluate")
     }
 
+
+    func factory() -> CurveView {
+        preconditionFailure("subclasses must define #factory")
+    }
+
+    func splitAt(at t: CGFloat) -> (CurveView, CurveView) {
+        var list = points.map { point in point.center }
+        var left = [NSPoint]()
+        var right = [NSPoint]()
+        
+        while list.count > 1 {
+            left.append(list[0])
+            right.append(list[list.count-1])
+            
+            var newList = [NSPoint]()
+            for i in 1...(list.count-1) {
+                let x = list[i-1].x + (list[i].x - list[i-1].x) * t
+                let y = list[i-1].y + (list[i].y - list[i-1].y) * t
+                newList.append(NSPoint(x: x, y: y))
+            }
+            
+            list = newList
+        }
+        
+        left.append(list[0])
+        right.append(list[0])
+        
+        let leftCurve = factory()
+        for point in left { leftCurve.appendControlPoint(x: point.x, y: point.y) }
+
+        let rightCurve = factory()
+        for point in right.reversed() { rightCurve.appendControlPoint(x: point.x, y: point.y) }
+        return (leftCurve, rightCurve)
+    }
+
     override func draw(_ dirtyRect: NSRect) {
         if points.count > 0 {
             let path = NSBezierPath()

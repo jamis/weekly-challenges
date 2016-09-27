@@ -10,7 +10,9 @@ import Cocoa
 
 class CurveViewController : NSViewController {
     override func viewDidLoad() {
-        let curve = CubicCurveView(frame: view.bounds)
-        view.addSubview(curve)
+        let curve = CubicCurveView.withDefaultCurveIn(frame: view.bounds)
+        let (left, right) = curve.splitAt(at: 0.75)
+        view.addSubview(left)
+        view.addSubview(right)
     }
 }

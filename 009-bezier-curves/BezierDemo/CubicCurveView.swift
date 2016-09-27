@@ -9,21 +9,27 @@
 import Cocoa
 
 class CubicCurveView : CurveView {
-    override init(frame frameRect: NSRect) {
-        super.init(frame: frameRect)
-        
-        let x1 = frame.size.width / 8.0
-        let x2 = frame.size.width - x1
-        
-        let y2 = frame.size.height / 8.0
-        let y1 = frame.size.height - y2
+    class func withDefaultCurveIn(frame frameRect: NSRect) -> CubicCurveView {
+        let view = CubicCurveView(frame: frameRect)
 
-        appendControlPoint(x: x1, y: y2)
-        appendControlPoint(x: x1, y: y1)
-        appendControlPoint(x: x2, y: y1)
-        appendControlPoint(x: x2, y: y2)
+        let x1 = frameRect.size.width / 8.0
+        let x2 = frameRect.size.width - x1
+        
+        let y2 = frameRect.size.height / 8.0
+        let y1 = frameRect.size.height - y2
+        
+        view.appendControlPoint(x: x1, y: y2)
+        view.appendControlPoint(x: x1, y: y1)
+        view.appendControlPoint(x: x2, y: y1)
+        view.appendControlPoint(x: x2, y: y2)
+        
+        return view
     }
     
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+    }
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
@@ -39,5 +45,9 @@ class CubicCurveView : CurveView {
         let y = c[0].y * t1 + 3 * c[1].y * t2 + 3 * c[2].y * t3 + c[3].y * t4
         
         return NSPoint(x: x, y: y)
+    }
+    
+    override func factory() -> CurveView {
+        return CubicCurveView(frame: frame)
     }
 }
