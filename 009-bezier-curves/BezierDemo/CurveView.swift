@@ -8,25 +8,54 @@
 
 import Cocoa
 
-class CurveView : NSView, ControlPointDelegate {
-    var points: [ControlPointView] = []
+class CurveView : NSView, CurveDelegate {
+    var handles: [ControlPointView] = []
+    let curve = Curve()
     
-    func appendControlPoint(x: CGFloat, y: CGFloat) {
-        let point = ControlPointView(origin: NSPoint(x: x, y: y), radius: 10.0)
-        point.delegate = self
-        points.append(point)
-        addSubview(point)
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        setupQuadraticCurve()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupQuadraticCurve()
+    }
+
+    private func setupQuadraticCurve() {
+        curve.delegate = self
+        
+        let x1 = Double(bounds.size.width) / 8.0
+        let x2 = Double(bounds.size.width) / 2.0
+        let x3 = Double(bounds.size.width) - x1
+        
+        let y2 = Double(bounds.size.height) / 8.0
+        let y1 = Double(bounds.size.height) - y2
+        
+        let p1 = ControlPoint(x: x1, y: y2, w: 1.0)
+        let p2 = ControlPoint(x: x2, y: y1, w: 1.0)
+        let p3 = ControlPoint(x: x3, y: y2, w: 1.0)
+        
+        curve.addPoint(p1)
+        curve.addPoint(p2)
+        curve.addPoint(p3)
+    }
+
+    func elevateDegree() {
+        curve.elevateDegree()
     }
     
-    func evaluate(at t: CGFloat, points c: [NSPoint]) -> NSPoint {
-        preconditionFailure("subclasses must define #evaluate")
+    func curveChanged(_ curve: Curve) {
+        setNeedsDisplay(bounds)
+    }
+    
+    func curveControlPoint(_ point: ControlPoint, addedTo curve: Curve) {
+        let cp = ControlPointView(point: point)
+        self.addSubview(cp)
+        handles.append(cp)
     }
 
-
-    func factory() -> CurveView {
-        preconditionFailure("subclasses must define #factory")
-    }
-
+/*
     func splitAt(at t: CGFloat) -> (CurveView, CurveView) {
         var list = points.map { point in point.center }
         var left = [NSPoint]()
@@ -56,26 +85,22 @@ class CurveView : NSView, ControlPointDelegate {
         for point in right.reversed() { rightCurve.appendControlPoint(x: point.x, y: point.y) }
         return (leftCurve, rightCurve)
     }
+ */
 
     override func draw(_ dirtyRect: NSRect) {
-        if points.count > 0 {
+        if handles.count > 0 {
             let path = NSBezierPath()
             
-            let c = points.map { point in point.center }
-            
-            path.move(to: c[0])
-            for t: CGFloat in stride(from: 0.02, to: 0.999, by: 0.02) {
-                let point = evaluate(at: t, points: c)
-                path.line(to: point)
+            let point = curve.evaluate(at: 0.0)
+            path.move(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
+
+            for t: Double in stride(from: 0.02, to: 1.019, by: 0.02) {
+                let point = curve.evaluate(at: t)
+                path.line(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
             }
-            path.line(to: c[c.count-1])
             
             NSColor.black.setStroke()
             path.stroke()
         }
-    }
-    
-    func controlPointMoved(_ point: ControlPointView) {
-        setNeedsDisplay(bounds)
     }
 }

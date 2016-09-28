@@ -10,9 +10,10 @@ import Cocoa
 
 class CurveViewController : NSViewController {
     override func viewDidLoad() {
-        let curve = CubicCurveView.withDefaultCurveIn(frame: view.bounds)
-        let (left, right) = curve.splitAt(at: 0.75)
-        view.addSubview(left)
-        view.addSubview(right)
+    }
+    
+    @IBAction func addNewPoint(sender: AnyObject) {
+        let curveView = view as! CurveView
+        curveView.elevateDegree()
     }
 }

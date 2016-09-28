@@ -8,28 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		1C0D72221D99988400599A69 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72211D99988400599A69 /* AppDelegate.swift */; };
-		1C0D72241D99988400599A69 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72231D99988400599A69 /* ViewController.swift */; };
 		1C0D72261D99988400599A69 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1C0D72251D99988400599A69 /* Assets.xcassets */; };
 		1C0D72291D99988400599A69 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C0D72271D99988400599A69 /* Main.storyboard */; };
-		1C0D72391D99C07000599A69 /* CubicCurveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D72381D99C07000599A69 /* CubicCurveView.swift */; };
 		1C0D723B1D99C2D000599A69 /* CurveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D723A1D99C2D000599A69 /* CurveView.swift */; };
+		1CAE538A1D9ADA5200187CFD /* Curve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CAE53891D9ADA5200187CFD /* Curve.swift */; };
+		1CAE538C1D9ADA7200187CFD /* ControlPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CAE538B1D9ADA7200187CFD /* ControlPoint.swift */; };
 		1CB8F7791D99CC9F008FC2AE /* ControlPointView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8F7761D99CC9F008FC2AE /* ControlPointView.swift */; };
 		1CB8F77A1D99CC9F008FC2AE /* CurveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8F7771D99CC9F008FC2AE /* CurveViewController.swift */; };
-		1CB8F77B1D99CC9F008FC2AE /* QuadraticCurveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8F7781D99CC9F008FC2AE /* QuadraticCurveView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		1C0D721E1D99988400599A69 /* BezierDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BezierDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C0D72211D99988400599A69 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		1C0D72231D99988400599A69 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		1C0D72251D99988400599A69 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1C0D72281D99988400599A69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1C0D722A1D99988400599A69 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1C0D72381D99C07000599A69 /* CubicCurveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CubicCurveView.swift; sourceTree = "<group>"; };
 		1C0D723A1D99C2D000599A69 /* CurveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurveView.swift; sourceTree = "<group>"; };
+		1CAE53891D9ADA5200187CFD /* Curve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Curve.swift; sourceTree = "<group>"; };
+		1CAE538B1D9ADA7200187CFD /* ControlPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlPoint.swift; sourceTree = "<group>"; };
 		1CB8F7761D99CC9F008FC2AE /* ControlPointView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlPointView.swift; sourceTree = "<group>"; };
 		1CB8F7771D99CC9F008FC2AE /* CurveViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurveViewController.swift; sourceTree = "<group>"; };
-		1CB8F7781D99CC9F008FC2AE /* QuadraticCurveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuadraticCurveView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,14 +62,13 @@
 			children = (
 				1CB8F7761D99CC9F008FC2AE /* ControlPointView.swift */,
 				1CB8F7771D99CC9F008FC2AE /* CurveViewController.swift */,
-				1CB8F7781D99CC9F008FC2AE /* QuadraticCurveView.swift */,
 				1C0D723A1D99C2D000599A69 /* CurveView.swift */,
-				1C0D72381D99C07000599A69 /* CubicCurveView.swift */,
 				1C0D72211D99988400599A69 /* AppDelegate.swift */,
-				1C0D72231D99988400599A69 /* ViewController.swift */,
 				1C0D72251D99988400599A69 /* Assets.xcassets */,
 				1C0D72271D99988400599A69 /* Main.storyboard */,
 				1C0D722A1D99988400599A69 /* Info.plist */,
+				1CAE53891D9ADA5200187CFD /* Curve.swift */,
+				1CAE538B1D9ADA7200187CFD /* ControlPoint.swift */,
 			);
 			path = BezierDemo;
 			sourceTree = "<group>";
@@ -148,11 +145,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CB8F77A1D99CC9F008FC2AE /* CurveViewController.swift in Sources */,
-				1C0D72241D99988400599A69 /* ViewController.swift in Sources */,
 				1CB8F7791D99CC9F008FC2AE /* ControlPointView.swift in Sources */,
+				1CAE538A1D9ADA5200187CFD /* Curve.swift in Sources */,
+				1CAE538C1D9ADA7200187CFD /* ControlPoint.swift in Sources */,
 				1C0D723B1D99C2D000599A69 /* CurveView.swift in Sources */,
-				1CB8F77B1D99CC9F008FC2AE /* QuadraticCurveView.swift in Sources */,
-				1C0D72391D99C07000599A69 /* CubicCurveView.swift in Sources */,
 				1C0D72221D99988400599A69 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

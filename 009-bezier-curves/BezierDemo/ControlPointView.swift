@@ -12,30 +12,27 @@ enum ControlPointState {
     case normal, active, highlighted
 }
 
-protocol ControlPointDelegate {
-    func controlPointMoved(_ point: ControlPointView)
-}
-
-class ControlPointView : NSView {
+class ControlPointView : NSView, ControlPointDelegate {
+    let point: ControlPoint
     var state = ControlPointState.normal
-    var delegate: ControlPointDelegate? = nil
     var trackingArea: NSTrackingArea? = nil
 
     var radius: CGFloat {
-        return (bounds.size.width / 2.0)
-    }
-    
-    var center: NSPoint {
-        return NSPoint(x: frame.origin.x + frame.size.width / 2.0, y: frame.origin.y + frame.size.height / 2.0)
+        return CGFloat(point.w) * 5
     }
 
-    init(origin: NSPoint, radius: CGFloat) {
-        let frame = NSRect(x: origin.x - radius, y: origin.y - radius, width: radius*2, height: radius*2)
+    init(point: ControlPoint) {
+        self.point = point
+
+        let r = CGFloat(point.w) * 5 + 1
+        let frame = NSRect(x: CGFloat(point.x) - r, y: CGFloat(point.y) - r, width: r*2, height: r*2)
         super.init(frame: frame)
+
+        point.addDelegate(self)
     }
 
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
+        preconditionFailure("ControlPointView's init with coder should never be used")
     }
 
     override func updateTrackingAreas() {
@@ -55,15 +52,21 @@ class ControlPointView : NSView {
     }
     
     override func mouseUp(with event: NSEvent) {
-        state = .active
+        state = .highlighted
         setNeedsDisplay(bounds)
     }
     
     override func mouseDragged(with event: NSEvent) {
-        let p = event.locationInWindow
-        setFrameOrigin(NSPoint(x: p.x - radius, y: p.y - radius))
-
-        delegate?.controlPointMoved(self)
+        state = .active
+        
+        if event.modifierFlags.contains(.shift) {
+            let dw = (abs(event.deltaX) > abs(event.deltaY) ? event.deltaX : event.deltaY) / 25.0
+            let w = min(max(point.w + Double(dw), 0.4), 5.0)
+            point.w = w
+        } else {
+            let p = event.locationInWindow
+            point.position = (Double(p.x), Double(p.y))
+        }
     }
     
     override func mouseEntered(with event: NSEvent) {
@@ -77,18 +80,27 @@ class ControlPointView : NSView {
     }
     
     override func draw(_ dirtyRect: NSRect) {
-        let d: CGFloat = (state == .active || state == .highlighted) ? 1 : 5
-        let path = NSBezierPath(ovalIn: bounds.insetBy(dx: d, dy: d))
+        let path = NSBezierPath(ovalIn: bounds.insetBy(dx: 1, dy: 1))
         
-        if (state == .highlighted || state == .active) {
-            NSColor.red.setFill()
+        if state == .highlighted {
+            NSColor(red: 1.0, green: 0.4, blue: 0.4, alpha: 1).setFill()
+            NSColor(red: 0.6, green: 0, blue: 0, alpha: 1).setStroke()
+        } else if state == .active {
+            NSColor(red: 1.0, green: 0, blue: 0, alpha: 1).setFill()
+            NSColor(red: 0.6, green: 0, blue: 0, alpha: 1).setStroke()
         } else {
             NSColor.gray.setFill()
+            NSColor.black.setStroke()
         }
-
-        NSColor.black.setStroke()
 
         path.fill()
         path.stroke()
+    }
+    
+    func controlPointChanged(_ point: ControlPoint) {
+        let r = radius + 1
+        
+        setFrameOrigin(NSPoint(x: CGFloat(point.x) - r, y: CGFloat(point.y) - r))
+        setFrameSize(NSSize(width: r*2, height: r*2))
     }
 }
