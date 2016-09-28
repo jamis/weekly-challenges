@@ -10,6 +10,7 @@ import Foundation
 
 protocol ControlPointDelegate {
     func controlPointChanged(_ point: ControlPoint)
+    func isEqual(_ object: Any?) -> Bool
 }
 
 class ControlPoint {
@@ -49,6 +50,12 @@ class ControlPoint {
         delegates.append(delegate)
     }
     
+    func removeDelegate(_ delegate: ControlPointDelegate) {
+        if let index = (delegates.index { d in d.isEqual(delegate) }) {
+            delegates.remove(at: index)
+        }
+    }
+
     private func changed() {
         for delegate in delegates { delegate.controlPointChanged(self) }
     }

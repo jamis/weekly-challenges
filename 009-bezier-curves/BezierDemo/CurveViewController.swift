@@ -16,4 +16,9 @@ class CurveViewController : NSViewController {
         let curveView = view as! CurveView
         curveView.elevateDegree()
     }
+    
+    @IBAction func splitActiveCurve(sender: AnyObject) {
+        let curveView = view as! CurveView
+        curveView.splitActiveCurve()
+    }
 }

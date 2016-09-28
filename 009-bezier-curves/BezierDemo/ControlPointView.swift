@@ -35,6 +35,11 @@ class ControlPointView : NSView, ControlPointDelegate {
         preconditionFailure("ControlPointView's init with coder should never be used")
     }
 
+    func remove() {
+        removeFromSuperview()
+        point.removeDelegate(self)
+    }
+
     override func updateTrackingAreas() {
         super.updateTrackingAreas()
         

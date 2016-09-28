@@ -677,9 +677,15 @@
                                         <action selector="addNewPointWithSender:" target="Oky-zY-oP4" id="Zmy-7k-EOX"/>
                                     </connections>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="D752C5AF-1012-4CA5-851F-A6E089EEB4BA" label="Split Curve" paletteLabel="Split Curve" tag="-1" image="scissors-128" id="dWa-jp-sk2">
+                                    <connections>
+                                        <action selector="splitActiveCurveWithSender:" target="Oky-zY-oP4" id="Bdl-XL-FbZ"/>
+                                    </connections>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="68V-lf-a8K"/>
+                                <toolbarItem reference="dWa-jp-sk2"/>
                             </defaultToolbarItems>
                         </toolbar>
                     </window>
@@ -707,5 +713,6 @@
     </scenes>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>
+        <image name="scissors-128" width="128" height="128"/>
     </resources>
 </document>

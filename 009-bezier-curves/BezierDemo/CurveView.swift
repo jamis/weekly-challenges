@@ -10,22 +10,28 @@ import Cocoa
 
 class CurveView : NSView, CurveDelegate {
     var handles: [ControlPointView] = []
-    var points: [(Double, Double, Double)] = []
-    var activePoint: (Double, Double, Double)?
+    var points: [(Int, Double, Double, Double)] = []
+    var activePoint: (Int, Double, Double, Double)?
+    var persistentPoint: (Int, Double, Double, Double)?
     var trackingArea: NSTrackingArea?
-    let curve = Curve()
+    var curves: [Curve] = []
+    var activeCurve = -1
     
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
-        setupQuadraticCurve()
+        curves.append(setupQuadraticCurve())
+        activeCurve = 0
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        setupQuadraticCurve()
+        curves.append(setupQuadraticCurve())
+        activeCurve = 0
     }
 
-    private func setupQuadraticCurve() {
+    private func setupQuadraticCurve() -> Curve {
+        let curve = Curve()
+
         curve.delegate = self
         
         let x1 = Double(bounds.size.width) / 8.0
@@ -42,13 +48,43 @@ class CurveView : NSView, CurveDelegate {
         curve.addPoint(p1)
         curve.addPoint(p2)
         curve.addPoint(p3)
+        
+        return curve
     }
 
     func elevateDegree() {
+        let curve = curves[activeCurve]
         curve.elevateDegree()
     }
     
+    func splitActiveCurve() {
+        if let point = persistentPoint {
+            persistentPoint = nil
+
+            let curve = curves[point.0]
+            curves.remove(at: point.0)
+
+            let t = point.1
+            
+            let (left, right) = curve.splitAt(at: t)
+            
+            handles.forEach { handle in handle.remove() }
+            handles.removeAll()
+
+            left.delegate = self
+            right.delegate = self
+
+            curves.append(left)
+            curves.append(right)
+            
+            curves.forEach { curve in curve.reparent() }
+            setNeedsDisplay(bounds)
+        }
+    }
+    
     func curveChanged(_ curve: Curve) {
+        activePoint = nil
+        persistentPoint = nil
         setNeedsDisplay(bounds)
     }
     
@@ -71,8 +107,8 @@ class CurveView : NSView, CurveDelegate {
 
     override func draw(_ dirtyRect: NSRect) {
         if handles.count > 0 {
-            drawControlPolygon()
-            drawCurve()
+            drawControlPolygons()
+            drawCurves()
             drawActivePoint()
         }
     }
@@ -81,12 +117,12 @@ class CurveView : NSView, CurveDelegate {
         let pos = event.locationInWindow
         let x = Double(pos.x)
         let y = Double(pos.y)
-        var closest: (Double, Double, Double)? = nil
+        var closest: (Int, Double, Double, Double)? = nil
         var closestDistance = 1000000.0
         
         for point in points {
-            let dx = point.1 - x
-            let dy = point.2 - y
+            let dx = point.2 - x
+            let dy = point.3 - y
             let d = sqrt(dx * dx + dy * dy)
 
             if d < closestDistance {
@@ -109,47 +145,75 @@ class CurveView : NSView, CurveDelegate {
             }
         }
     }
-
-    private func drawControlPolygon() {
-        let poly = NSBezierPath()
-        
-        let point = curve.controlPoint(0)
-        poly.move(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
-        
-        for i in 1...curve.degree {
-            let point = curve.controlPoint(i)
-            poly.line(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
-            
+    
+    override func mouseDown(with event: NSEvent) {
+        if let point = activePoint {
+            activeCurve = point.0
+            persistentPoint = point
+            setNeedsDisplay(bounds)
+        } else if persistentPoint != nil {
+            persistentPoint = nil
+            setNeedsDisplay(bounds)
         }
-        
-        NSColor.lightGray.setStroke()
-        poly.stroke()
+    }
+
+    private func drawControlPolygons() {
+        for curve in curves {
+            let poly = NSBezierPath()
+            
+            let point = curve.controlPoint(0)
+            poly.move(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
+            
+            for i in 1...curve.degree {
+                let point = curve.controlPoint(i)
+                poly.line(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
+                
+            }
+            
+            NSColor.lightGray.setStroke()
+            poly.stroke()
+        }
     }
     
-    private func drawCurve() {
-        let path = NSBezierPath()
-        
+    private func drawCurves() {
         points.removeAll()
-
-        let point = curve.evaluate(at: 0.0)
-        points.append((0.0, point.0, point.1))
-
-        path.move(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
         
-        for t: Double in stride(from: 0.02, to: 1.019, by: 0.02) {
-            let point = curve.evaluate(at: t)
-            points.append((t, point.0, point.1))
+        for (index, curve) in curves.enumerated() {
+            let path = NSBezierPath()
+            
+            let point = curve.evaluate(at: 0.0)
+            points.append((index, 0.0, point.0, point.1))
 
-            path.line(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
+            path.move(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
+            
+            for t: Double in stride(from: 0.02, to: 1.019, by: 0.02) {
+                let point = curve.evaluate(at: t)
+                points.append((index, t, point.0, point.1))
+
+                path.line(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
+            }
+            
+            if activeCurve == index {
+                NSColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0).setStroke()
+            } else {
+                NSColor.black.setStroke()
+            }
+
+            path.stroke()
         }
-        
-        NSColor.black.setStroke()
-        path.stroke()
     }
     
     private func drawActivePoint() {
+        if let point = persistentPoint {
+            let dot = NSBezierPath(ovalIn: NSRect(x: CGFloat(point.2-3), y: CGFloat(point.3-3), width: 6, height: 6))
+            NSColor(red: 1.0, green: 1.0, blue: 0.0, alpha: 1.0).setFill()
+            NSColor(red: 0.5, green: 0.5, blue: 0.0, alpha: 1.0).setStroke();
+            dot.fill()
+            dot.stroke();
+        }
+        
         if let point = activePoint {
-            let dot = NSBezierPath(ovalIn: NSRect(x: CGFloat(point.1-3), y: CGFloat(point.2-3), width: 6, height: 6))
+            let dot = NSBezierPath(ovalIn: NSRect(x: CGFloat(point.2-3), y: CGFloat(point.3-3), width: 6, height: 6))
             NSColor(red: 0.5, green: 0.5, blue: 1.0, alpha: 1.0).setFill()
             NSColor(red: 0.0, green: 0.0, blue: 0.7, alpha: 1.0).setStroke();
             dot.fill()

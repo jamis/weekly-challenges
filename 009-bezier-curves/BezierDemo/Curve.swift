@@ -21,6 +21,18 @@ class Curve: ControlPointDelegate {
     
     var degree: Int { return _points.count-1 }
     
+    func isEqual(_ object: Any?) -> Bool {
+        if let otherCurve = object as? Curve {
+            return self === otherCurve
+        } else {
+            return false
+        }
+    }
+
+    func reparent() {
+        _points.forEach { point in delegate?.curveControlPoint(point, addedTo: self) }
+    }
+
     func controlPoint(_ i: Int) -> (Double, Double, Double) {
         return (_points[i].x, _points[i].y, _points[i].w)
     }
