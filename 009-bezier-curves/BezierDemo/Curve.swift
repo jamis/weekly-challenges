@@ -65,7 +65,7 @@ class Curve: ControlPointDelegate {
 
     func elevateDegree() {
         let points = project3D()
-        let n1 = Double(points.count + 1)
+        let n1 = Double(points.count)
         
         let saved = points[points.count-1]
 
