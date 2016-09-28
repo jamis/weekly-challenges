@@ -19,6 +19,12 @@ class Curve: ControlPointDelegate {
     
     var delegate: CurveDelegate?
     
+    var degree: Int { return _points.count-1 }
+    
+    func controlPoint(_ i: Int) -> (Double, Double, Double) {
+        return (_points[i].x, _points[i].y, _points[i].w)
+    }
+
     func controlPointChanged(_ point: ControlPoint) {
         delegate?.curveChanged(self)
     }
@@ -65,7 +71,7 @@ class Curve: ControlPointDelegate {
 
     func elevateDegree() {
         let points = project3D()
-        let n1 = Double(points.count)
+        let n1 = Double(points.count) // degree of curve + 1 == points.count
         
         let saved = points[points.count-1]
 
@@ -88,6 +94,55 @@ class Curve: ControlPointDelegate {
         addPoint(newPoint)
     }
 
+    func splitAt(at t: Double) -> (Curve, Curve) {
+       var points = project3D()
+
+       var left = [(Double, Double, Double)]()
+       var right = [(Double, Double, Double)]()
+    
+       while points.count > 1 {
+           left.append(points[0])
+           right.append(points[points.count-1])
+    
+           var newList = [(Double, Double, Double)]()
+           for i in 1...points.count-1 {
+               let a = points[i-1]
+               let b = points[i]
+               
+               let x = a.0 + (b.0 - a.0) * t
+               let y = a.1 + (b.1 - a.1) * t
+               let w = a.2 + (b.2 - a.2) * t
+
+               newList.append((x, y, w))
+           }
+    
+           points = newList
+       }
+    
+       left.append(points[0])
+       right.append(points[0])
+    
+       let leftCurve = Curve()
+       for point in left {
+           let w = point.2
+           let x = point.0 / w
+           let y = point.1 / w
+           
+           leftCurve.addPoint(ControlPoint(x: x, y: y, w: w))
+       }
+    
+       let rightCurve = Curve()
+       for point in right.reversed() {
+           let w = point.2
+           let x = point.0 / w
+           let y = point.1 / w
+           
+           rightCurve.addPoint(ControlPoint(x: x, y: y, w: w))
+       }
+
+       return (leftCurve, rightCurve)
+    }
+ 
     private func recompute() {
         while (_coeffs.count < _points.count) { _coeffs.append(0.0) }
         
