@@ -11,7 +11,8 @@
 		1C0D72261D99988400599A69 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1C0D72251D99988400599A69 /* Assets.xcassets */; };
 		1C0D72291D99988400599A69 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C0D72271D99988400599A69 /* Main.storyboard */; };
 		1C0D723B1D99C2D000599A69 /* CurveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0D723A1D99C2D000599A69 /* CurveView.swift */; };
-		1C90FB911D9C1F5E00B195C0 /* scissors-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C90FB901D9C1F5E00B195C0 /* scissors-128.png */; };
+		1C90FB961D9C315D00B195C0 /* circle-icon-blank_338889.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C90FB941D9C315D00B195C0 /* circle-icon-blank_338889.png */; };
+		1C90FB971D9C315D00B195C0 /* scissors-128.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C90FB951D9C315D00B195C0 /* scissors-128.png */; };
 		1CAE538A1D9ADA5200187CFD /* Curve.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CAE53891D9ADA5200187CFD /* Curve.swift */; };
 		1CAE538C1D9ADA7200187CFD /* ControlPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CAE538B1D9ADA7200187CFD /* ControlPoint.swift */; };
 		1CB8F7791D99CC9F008FC2AE /* ControlPointView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB8F7761D99CC9F008FC2AE /* ControlPointView.swift */; };
@@ -25,7 +26,8 @@
 		1C0D72281D99988400599A69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1C0D722A1D99988400599A69 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1C0D723A1D99C2D000599A69 /* CurveView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurveView.swift; sourceTree = "<group>"; };
-		1C90FB901D9C1F5E00B195C0 /* scissors-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "scissors-128.png"; path = "../../../../Downloads/scissors-128.png"; sourceTree = "<group>"; };
+		1C90FB941D9C315D00B195C0 /* circle-icon-blank_338889.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "circle-icon-blank_338889.png"; sourceTree = "<group>"; };
+		1C90FB951D9C315D00B195C0 /* scissors-128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "scissors-128.png"; sourceTree = "<group>"; };
 		1CAE53891D9ADA5200187CFD /* Curve.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Curve.swift; sourceTree = "<group>"; };
 		1CAE538B1D9ADA7200187CFD /* ControlPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlPoint.swift; sourceTree = "<group>"; };
 		1CB8F7761D99CC9F008FC2AE /* ControlPointView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlPointView.swift; sourceTree = "<group>"; };
@@ -62,13 +64,14 @@
 		1C0D72201D99988400599A69 /* BezierDemo */ = {
 			isa = PBXGroup;
 			children = (
+				1C90FB941D9C315D00B195C0 /* circle-icon-blank_338889.png */,
+				1C90FB951D9C315D00B195C0 /* scissors-128.png */,
 				1CB8F7761D99CC9F008FC2AE /* ControlPointView.swift */,
 				1CB8F7771D99CC9F008FC2AE /* CurveViewController.swift */,
 				1C0D723A1D99C2D000599A69 /* CurveView.swift */,
 				1C0D72211D99988400599A69 /* AppDelegate.swift */,
 				1C0D72251D99988400599A69 /* Assets.xcassets */,
 				1C0D72271D99988400599A69 /* Main.storyboard */,
-				1C90FB901D9C1F5E00B195C0 /* scissors-128.png */,
 				1C0D722A1D99988400599A69 /* Info.plist */,
 				1CAE53891D9ADA5200187CFD /* Curve.swift */,
 				1CAE538B1D9ADA7200187CFD /* ControlPoint.swift */,
@@ -135,8 +138,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C90FB971D9C315D00B195C0 /* scissors-128.png in Resources */,
+				1C90FB961D9C315D00B195C0 /* circle-icon-blank_338889.png in Resources */,
 				1C0D72261D99988400599A69 /* Assets.xcassets in Resources */,
-				1C90FB911D9C1F5E00B195C0 /* scissors-128.png in Resources */,
 				1C0D72291D99988400599A69 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

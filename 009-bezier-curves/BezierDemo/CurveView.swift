@@ -16,6 +16,7 @@ class CurveView : NSView, CurveDelegate {
     var trackingArea: NSTrackingArea?
     var curves: [Curve] = []
     var activeCurve = -1
+    var showHandles = true
     
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -82,6 +83,18 @@ class CurveView : NSView, CurveDelegate {
         }
     }
     
+    func toggleHandles() {
+        showHandles = !showHandles
+        
+        if showHandles {
+            handles.forEach { handle in addSubview(handle) }
+        } else {
+            handles.forEach { handle in handle.removeFromSuperview() }
+        }
+        
+        setNeedsDisplay(bounds)
+    }
+
     func curveChanged(_ curve: Curve) {
         activePoint = nil
         persistentPoint = nil
@@ -158,20 +171,22 @@ class CurveView : NSView, CurveDelegate {
     }
 
     private func drawControlPolygons() {
-        for curve in curves {
-            let poly = NSBezierPath()
-            
-            let point = curve.controlPoint(0)
-            poly.move(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
-            
-            for i in 1...curve.degree {
-                let point = curve.controlPoint(i)
-                poly.line(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
+        if showHandles {
+            for curve in curves {
+                let poly = NSBezierPath()
                 
+                let point = curve.controlPoint(0)
+                poly.move(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
+                
+                for i in 1...curve.degree {
+                    let point = curve.controlPoint(i)
+                    poly.line(to: NSPoint(x: CGFloat(point.0), y: CGFloat(point.1)))
+                    
+                }
+                
+                NSColor.lightGray.setStroke()
+                poly.stroke()
             }
-            
-            NSColor.lightGray.setStroke()
-            poly.stroke()
         }
     }
     

@@ -682,10 +682,16 @@
                                         <action selector="splitActiveCurveWithSender:" target="Oky-zY-oP4" id="Bdl-XL-FbZ"/>
                                     </connections>
                                 </toolbarItem>
+                                <toolbarItem implicitItemIdentifier="EAA4349C-FB14-4642-8BA2-89804F034B6A" label="Toggle Handles" paletteLabel="Toggle Handles" tag="-1" image="circle-icon-blank_338889" id="5yP-uH-euE">
+                                    <connections>
+                                        <action selector="toggleHandlesWithSender:" target="Oky-zY-oP4" id="3EE-4L-cZ7"/>
+                                    </connections>
+                                </toolbarItem>
                             </allowedToolbarItems>
                             <defaultToolbarItems>
                                 <toolbarItem reference="68V-lf-a8K"/>
                                 <toolbarItem reference="dWa-jp-sk2"/>
+                                <toolbarItem reference="5yP-uH-euE"/>
                             </defaultToolbarItems>
                         </toolbar>
                     </window>
@@ -713,6 +719,7 @@
     </scenes>
     <resources>
         <image name="NSAddTemplate" width="11" height="11"/>
+        <image name="circle-icon-blank_338889" width="297.29031372070312" height="297.29031372070312"/>
         <image name="scissors-128" width="128" height="128"/>
     </resources>
 </document>

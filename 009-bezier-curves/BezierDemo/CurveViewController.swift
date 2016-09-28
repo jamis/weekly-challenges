@@ -21,4 +21,9 @@ class CurveViewController : NSViewController {
         let curveView = view as! CurveView
         curveView.splitActiveCurve()
     }
+    
+    @IBAction func toggleHandles(sender: AnyObject) {
+        let curveView = view as! CurveView
+        curveView.toggleHandles()
+    }
 }
