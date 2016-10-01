@@ -16,6 +16,7 @@ The challenges are:
 6. Perlin Noise -- https://medium.com/@jamis/weekly-programming-challenge-6-83fa37e9e737
 7. B+ Tree -- https://medium.com/@jamis/weekly-programming-challenge-7-286640364537
 8. Calculator Parser/Interpreter -- http://weblog.jamisbuck.org/2016/9/17/weekly-programming-challenge-8.html
+9. Bezier curves -- http://weblog.jamisbuck.org/2016/9/24/weekly-programming-challenge-9.html
 
 
 ## LICENSE
