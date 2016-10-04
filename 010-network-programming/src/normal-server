@@ -1,0 +1,42 @@
+#!/usr/bin/env escript
+
+main([Port]) ->
+  {ok, LSock} = gen_tcp:listen(list_to_integer(Port),
+                               [ binary,
+                                 {packet, 0},
+                                 {active, false} ]),
+  loop(LSock);
+main(_) ->
+  usage().
+
+loop(LSock) ->
+  {ok, Sock} = gen_tcp:accept(LSock),
+  ok = send_ready(Sock),
+  Query = read_query(Sock),
+  Result = process_query(Query),
+  ok = send_response(Sock, Result),
+  ok = gen_tcp:close(Sock),
+  loop(LSock).
+
+send_ready(Sock) ->
+  gen_tcp:send(Sock, <<"ready\n">>).
+
+read_query(Sock) ->
+  {ok, LengthB} = gen_tcp:recv(Sock, 4),
+  Length = binary:decode_unsigned(LengthB),
+  {ok, Query} = gen_tcp:recv(Sock, Length),
+  binary_to_list(Query).
+
+process_query(Query) ->
+  lists:reverse(Query).
+
+send_response(Sock, Result) ->
+  ResultB = list_to_binary(Result),
+  Length = byte_size(ResultB),
+  LengthB = <<Length:32>>,
+  ok = gen_tcp:send(Sock, LengthB),
+  gen_tcp:send(Sock, ResultB).
+
+usage() ->
+  io:format("usage: normal-server [port]\n"),
+  halt(1).

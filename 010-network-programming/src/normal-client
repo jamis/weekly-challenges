@@ -1,0 +1,20 @@
+#!/usr/bin/env escript
+
+main([Host, Port]) ->
+  {ok, Sock} = gen_tcp:connect(Host, list_to_integer(Port),
+                               [binary, {packet, 0}, {active, false}]),
+  {ok, <<"ready\n">>} = gen_tcp:recv(Sock, 6),
+  Query = <<"hello world">>,
+  QLength = byte_size(Query),
+  ok = gen_tcp:send(Sock, <<QLength:32>>),
+  ok = gen_tcp:send(Sock, Query),
+  {ok, RLength} = gen_tcp:recv(Sock, 4),
+  {ok, Result} = gen_tcp:recv(Sock, binary:decode_unsigned(RLength)),
+  ok = gen_tcp:close(Sock),
+  io:format("result: ~s\n", [Result]);
+main(_) ->
+  usage().
+
+usage() ->
+  io:format("usage: normal-client [host] [port]\n"),
+  halt(1).

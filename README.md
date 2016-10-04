@@ -17,6 +17,7 @@ The challenges are:
 7. B+ Tree -- https://medium.com/@jamis/weekly-programming-challenge-7-286640364537
 8. Calculator Parser/Interpreter -- http://weblog.jamisbuck.org/2016/9/17/weekly-programming-challenge-8.html
 9. Bezier curves -- http://weblog.jamisbuck.org/2016/9/24/weekly-programming-challenge-9.html
+10. Network programming -- http://weblog.jamisbuck.org/2016/10/1/weekly-programming-challenge-10.html
 
 
 ## LICENSE
