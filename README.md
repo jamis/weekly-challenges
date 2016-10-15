@@ -18,6 +18,7 @@ The challenges are:
 8. Calculator Parser/Interpreter -- http://weblog.jamisbuck.org/2016/9/17/weekly-programming-challenge-8.html
 9. Bezier curves -- http://weblog.jamisbuck.org/2016/9/24/weekly-programming-challenge-9.html
 10. Network programming -- http://weblog.jamisbuck.org/2016/10/1/weekly-programming-challenge-10.html
+11. Drawing Circles -- http://weblog.jamisbuck.org/2016/10/8/weekly-programming-challenge-11.html
 
 
 ## LICENSE
