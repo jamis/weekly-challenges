@@ -19,6 +19,7 @@ The challenges are:
 9. Bezier curves -- http://weblog.jamisbuck.org/2016/9/24/weekly-programming-challenge-9.html
 10. Network programming -- http://weblog.jamisbuck.org/2016/10/1/weekly-programming-challenge-10.html
 11. Drawing Circles -- http://weblog.jamisbuck.org/2016/10/8/weekly-programming-challenge-11.html
+12. Family Trees -- http://weblog.jamisbuck.org/2016/10/15/weekly-programming-challenge-12.html
 
 
 ## LICENSE
