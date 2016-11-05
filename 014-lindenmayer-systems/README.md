@@ -1,36 +1,18 @@
-# lsystem
+# Weekly Challenge #14: Lindenmayer Systems
 
-FIXME: description
+http://weblog.jamisbuck.org/2016/10/29/weekly-programming-challenge-14.html
 
-## Installation
+I decided to give Clojure a try this week...and bit off more than I could chew! Sadly, I was unable to complete the challenge, but I learned a little bit of Clojure!
 
-Download from http://example.com/FIXME.
 
-## Usage
+## LICENSE
 
-FIXME: explanation
+This code is provided as-is, with no guarantees or promises of support of
+any kind, implied or otherwise. You may use it however you wish, the sole
+exception that you may not claim authorship or any kind of financial control
+over the code.
 
-    $ java -jar lsystem-0.1.0-standalone.jar [args]
 
-## Options
+## AUTHOR
 
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
-
-## License
-
-Copyright © 2016 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Jamis Buck <jamis@jamisbuck.org>

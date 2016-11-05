@@ -20,6 +20,8 @@ The challenges are:
 10. Network programming -- http://weblog.jamisbuck.org/2016/10/1/weekly-programming-challenge-10.html
 11. Drawing Circles -- http://weblog.jamisbuck.org/2016/10/8/weekly-programming-challenge-11.html
 12. Family Trees -- http://weblog.jamisbuck.org/2016/10/15/weekly-programming-challenge-12.html
+13. Poisson Disk Sampling -- http://weblog.jamisbuck.org/2016/10/22/weekly-programming-challenge-13.html
+14. Lindenmayer Systems -- http://weblog.jamisbuck.org/2016/10/29/weekly-programming-challenge-14.html
 
 
 ## LICENSE
