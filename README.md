@@ -22,7 +22,8 @@ The challenges are:
 12. Family Trees -- http://weblog.jamisbuck.org/2016/10/15/weekly-programming-challenge-12.html
 13. Poisson Disk Sampling -- http://weblog.jamisbuck.org/2016/10/22/weekly-programming-challenge-13.html
 14. Lindenmayer Systems -- http://weblog.jamisbuck.org/2016/10/29/weekly-programming-challenge-14.html
-14. Turtle Graphics -- http://weblog.jamisbuck.org/2016/11/05/weekly-programming-challenge-15.html
+15. Turtle Graphics -- http://weblog.jamisbuck.org/2016/11/05/weekly-programming-challenge-15.html
+16. Midpoint Displacement -- http://weblog.jamisbuck.org/2016/11/12/weekly-programming-challenge-16.html
 
 
 ## LICENSE
